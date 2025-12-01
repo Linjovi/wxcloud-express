@@ -8,6 +8,22 @@ FROM node:18-alpine
 # 使用 HTTPS 协议访问容器云调用证书安装
 RUN apk add --update --no-cache ca-certificates
 
+# 安装 Puppeteer 所需的 Chromium 和依赖
+# 参考: https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-on-alpine
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      nodejs \
+      yarn
+
+# 告诉 Puppeteer 跳过下载 Chromium，使用系统安装的版本
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 # 指定工作目录
 WORKDIR /app
 
