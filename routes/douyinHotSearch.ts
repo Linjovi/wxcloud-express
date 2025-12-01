@@ -20,6 +20,7 @@ export async function getDouyinHotSearch(): Promise<DouyinHotSearchItem[]> {
     // 启动浏览器
     browser = await puppeteer.launch({
       headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",

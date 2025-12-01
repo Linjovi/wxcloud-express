@@ -19,6 +19,7 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
     // 启动浏览器
     browser = await puppeteer.launch({
       headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
