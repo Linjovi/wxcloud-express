@@ -1,9 +1,29 @@
-const OpenAI = require("openai");
+import OpenAI from "openai";
+import { Request, Response } from "express";
+
+interface JudgementData {
+  nameA: string;
+  nameB: string;
+  cause: string;
+  sideA?: string;
+  sideB?: string;
+}
+
+interface JudgementResult {
+  winner: "A" | "B" | "Draw";
+  winnerName: string;
+  verdictTitle: string;
+  funnyComment: string;
+  analysis: string;
+  actionItems: string[];
+  scoreA: number;
+  scoreB: number;
+}
 
 /**
  * 构建猫猫法官的 prompt
  */
-function buildCatJudgePrompt(data) {
+function buildCatJudgePrompt(data: JudgementData): string {
   const { nameA, nameB, cause, sideA, sideB } = data;
   
   return `
@@ -24,7 +44,9 @@ The Case:
 - Party B's Argument: ${sideB || "(Remained silent/No comment)"}
 
 Task:
-Analyze this conflict deeply but express the verdict in a super cute anime style.
+Analyze this conflict deeply but express the verdict in a super cute anime style. 
+This could be a dispute between romantic partners, close friends, best friends, or any other relationship. 
+Judge fairly regardless of the relationship type.
 
 You MUST respond with a valid JSON object only, no other text. The JSON must contain:
 - winner: "A", "B", or "Draw"
@@ -55,7 +77,7 @@ function createDeepSeekClient() {
 /**
  * 解析 AI 响应为 JSON
  */
-function parseAIResponse(content) {
+function parseAIResponse(content: string): any {
   // 移除可能的 markdown 代码块标记
   const jsonContent = content
     .replace(/^```json\s*/i, "")
@@ -69,7 +91,7 @@ function parseAIResponse(content) {
 /**
  * 验证和规范化裁决结果
  */
-function validateAndNormalizeResult(result) {
+function validateAndNormalizeResult(result: any): JudgementResult {
   // 验证必需字段
   const requiredFields = [
     "winner",
@@ -107,13 +129,13 @@ function validateAndNormalizeResult(result) {
   result.scoreA = Math.max(0, Math.min(100, parseInt(result.scoreA) || 50));
   result.scoreB = Math.max(0, Math.min(100, parseInt(result.scoreB) || 50));
 
-  return result;
+  return result as JudgementResult;
 }
 
 /**
  * 获取猫猫法官的裁决
  */
-async function getCatJudgement(data) {
+export async function getCatJudgement(data: JudgementData): Promise<JudgementResult> {
   const { nameA, nameB, cause, sideA, sideB } = data;
 
   // 验证必需参数
@@ -145,7 +167,7 @@ async function getCatJudgement(data) {
   });
 
   // 解析响应
-  const content = completion.choices[0].message.content.trim();
+  const content = completion.choices[0].message.content?.trim() || "";
   let result;
   
   try {
@@ -163,7 +185,7 @@ async function getCatJudgement(data) {
 /**
  * 猫猫法官接口路由处理
  */
-async function catJudgementHandler(req, res) {
+export async function catJudgementHandler(req: Request, res: Response) {
   try {
     const { nameA, nameB, cause, sideA, sideB } = req.body;
 
@@ -173,7 +195,7 @@ async function catJudgementHandler(req, res) {
       code: 0,
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("猫猫法官接口错误:", error);
     
     // 根据错误类型返回不同的状态码
@@ -186,9 +208,3 @@ async function catJudgementHandler(req, res) {
     });
   }
 }
-
-module.exports = {
-  catJudgementHandler,
-  getCatJudgement,
-};
-

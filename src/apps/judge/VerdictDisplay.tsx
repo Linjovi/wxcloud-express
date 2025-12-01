@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { VerdictResult, ConflictData } from "../types";
-import { PawIcon, CatJudgeAvatar, CatFaceIcon } from "./Icons";
+import { VerdictResult, ConflictData } from "./types";
+import { PawIcon, CatJudgeAvatar, CatFaceIcon } from "../../common/components/Icons";
 
 interface VerdictDisplayProps {
   result: VerdictResult;

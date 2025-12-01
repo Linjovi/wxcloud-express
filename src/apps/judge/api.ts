@@ -1,4 +1,4 @@
-import { ConflictData, VerdictResult } from "../types";
+import { ConflictData, VerdictResult } from "./types";
 
 interface ApiResponse {
   code: number;
@@ -43,3 +43,4 @@ export const getCatJudgement = async (
     throw new Error("网络错误，请稍后再试喵~");
   }
 };
+

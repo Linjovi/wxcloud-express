@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ConflictData } from "../types";
-import { CatJudgeAvatar } from "./Icons";
+import { ConflictData } from "./types";
+import { CatJudgeAvatar } from "../../common/components/Icons";
 
 interface JudgeFormProps {
   onSubmit: (data: ConflictData) => void;

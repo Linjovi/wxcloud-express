@@ -1,8 +1,11 @@
-const path = require("path");
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const { catJudgementHandler } = require("./routes/catJudgement");
+import path from "path";
+import express, { Request, Response } from "express";
+import cors from "cors";
+import morgan from "morgan";
+import { catJudgementHandler } from "./routes/catJudgement";
+import { weiboHotSearchHandler } from "./routes/weiboHotSearch";
+import { douyinHotSearchHandler } from "./routes/douyinHotSearch";
+import { allHotSearchHandler } from "./routes/allHotSearch";
 
 const logger = morgan("tiny");
 
@@ -18,17 +21,28 @@ app.use(express.static(path.join(__dirname, "public")));
 // API 路由
 
 // 小程序调用，获取微信 Open ID
-app.get("/api/wx_openid", async (req, res) => {
+app.get("/api/wx_openid", async (req: Request, res: Response) => {
   if (req.headers["x-wx-source"]) {
     res.send(req.headers["x-wx-openid"]);
+  } else {
+    res.status(400).send("Missing x-wx-source header");
   }
 });
 
 // 猫猫法官接口
 app.post("/api/cat-judgement", catJudgementHandler);
 
+// 微博热搜榜接口
+app.get("/api/weibo-hot-search", weiboHotSearchHandler);
+
+// 抖音热搜榜接口
+app.get("/api/douyin-hot-search", douyinHotSearchHandler);
+
+// 聚合热搜接口
+app.get("/api/all-hot-search", allHotSearchHandler);
+
 // React 应用路由处理（所有非 API 路由都返回 index.html）
-app.get("*", (req, res) => {
+app.get("*", (req: Request, res: Response) => {
   // 排除 API 路由
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ code: 404, message: "Not found" });

@@ -22,10 +22,3 @@ export interface VerdictResult {
   scoreB: number;
 }
 
-export enum AppState {
-  HOME,
-  INPUT,
-  THINKING,
-  RESULT,
-  ERROR,
-}

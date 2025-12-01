@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { NavBar } from "./components/NavBar";
-import { JudgeForm } from "./components/JudgeForm";
-import { VerdictDisplay } from "./components/VerdictDisplay";
-import { LoadingScreen } from "./components/LoadingScreen";
-import { Home } from "./components/Home";
-import { AppState, ConflictData, VerdictResult } from "./types";
-import { getCatJudgement } from "./services/api";
+import { NavBar } from "./common/components/NavBar";
+import { JudgeForm } from "./apps/judge/JudgeForm";
+import { VerdictDisplay } from "./apps/judge/VerdictDisplay";
+import { LoadingScreen } from "./common/components/LoadingScreen";
+import { Home } from "./common/components/Home";
+import { HotSearch } from "./apps/hot-search/HotSearch";
+import { AppState } from "./common/types";
+import { ConflictData, VerdictResult } from "./apps/judge/types";
+import { getCatJudgement } from "./apps/judge/api";
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.HOME);
@@ -36,13 +38,14 @@ const App: React.FC = () => {
   const handleBack = () => {
     if (appState === AppState.RESULT) {
       handleReset();
-    } else if (appState === AppState.INPUT) {
+    } else if (appState === AppState.INPUT || appState === AppState.WEIBO_HOT_SEARCH) {
       setAppState(AppState.HOME);
     }
   };
 
   const getTitle = () => {
     if (appState === AppState.HOME) return "AI 喵星球";
+    if (appState === AppState.WEIBO_HOT_SEARCH) return "吃瓜喵";
     return "猫猫法官";
   };
 
@@ -58,7 +61,10 @@ const App: React.FC = () => {
 
         <main className="w-full">
           {appState === AppState.HOME && (
-            <Home onSelect={() => setAppState(AppState.INPUT)} />
+            <Home
+              onSelectJudge={() => setAppState(AppState.INPUT)}
+              onSelectGossip={() => setAppState(AppState.WEIBO_HOT_SEARCH)}
+            />
           )}
 
           {appState === AppState.INPUT && <JudgeForm onSubmit={handleSubmit} />}
@@ -71,6 +77,10 @@ const App: React.FC = () => {
               inputData={conflictData}
               onReset={handleReset}
             />
+          )}
+
+          {appState === AppState.WEIBO_HOT_SEARCH && (
+            <HotSearch onBack={handleBack} />
           )}
         </main>
       </div>

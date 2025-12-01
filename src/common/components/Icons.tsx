@@ -20,6 +20,25 @@ export const CatJudgeAvatar = ({
   </div>
 );
 
+export const GossipCatAvatar = ({
+  className = "w-24 h-24",
+}: {
+  className?: string;
+}) => (
+  <div
+    className={`${className} relative overflow-hidden rounded-full border-4 border-pink-200 shadow-xl bg-white`}
+  >
+    <img
+      src="https://robohash.org/TravellerCatGuide.png?set=set4&bgset=bg1"
+      alt="Gossip Cat"
+      className="w-full h-full object-cover"
+    />
+    <div className="absolute bottom-0 inset-x-0 bg-pink-500/80 text-white text-[10px] text-center py-1 backdrop-blur-sm font-bold">
+      吃瓜の喵
+    </div>
+  </div>
+);
+
 export const PawIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg
     className={className}
