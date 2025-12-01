@@ -11,7 +11,11 @@ type Source = "weibo" | "douyin";
 
 export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
   const [source, setSource] = useState<Source>("weibo");
-  const [data, setData] = useState<{ weibo: HotSearchItem[]; douyin: HotSearchItem[] }>({ weibo: [], douyin: [] });
+  const [data, setData] = useState<{
+    weibo: HotSearchItem[];
+    douyin: HotSearchItem[];
+    summary?: string;
+  }>({ weibo: [], douyin: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -108,7 +112,7 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 space-y-4">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 animate-pulse">
             <div
@@ -136,6 +140,22 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
           </div>
         ) : (
           <div className="space-y-3 animate-slide-up">
+            {/* AI Summary Card */}
+            {data.summary && (
+              <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-100 p-4 rounded-2xl shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-purple-100 rounded-bl-full opacity-50"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">🤖</span>
+                    <h3 className="font-bold text-purple-900">吃瓜喵的总结</h3>
+                  </div>
+                  <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap bg-white/60 p-3 rounded-xl border border-purple-50/50">
+                    {data.summary}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {list.map((item, index) => (
               <a
                 key={index}

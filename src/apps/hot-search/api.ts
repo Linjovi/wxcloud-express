@@ -15,6 +15,7 @@ interface AllHotSearchResponse {
   data: {
     weibo: HotSearchItem[];
     douyin: HotSearchItem[];
+    summary?: string;
     timestamp: string;
   };
   message?: string;
@@ -23,6 +24,7 @@ interface AllHotSearchResponse {
 export const getAllHotSearch = async (): Promise<{
   weibo: HotSearchItem[];
   douyin: HotSearchItem[];
+  summary?: string;
 }> => {
   try {
     const response = await fetch("/api/all-hot-search");
@@ -40,6 +42,7 @@ export const getAllHotSearch = async (): Promise<{
     return {
       weibo: result.data.weibo,
       douyin: result.data.douyin,
+      summary: result.data.summary,
     };
   } catch (error) {
     console.error("Error fetching all hot search:", error);
