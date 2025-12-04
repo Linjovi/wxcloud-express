@@ -103,7 +103,7 @@ const ReadingStage: React.FC<ReadingStageProps> = ({
             {reading && !loading && (
                 <div ref={resultRef} className="w-full max-w-5xl relative mt-12 group perspective-1000 animate-fade-in-up">
 
-                    <div className="relative bg-[#1a1638]/90 backdrop-blur-md border border-yellow-500/20 rounded-xl p-2 md:p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col gap-8">
+                    <div className="relative bg-[#1a1638]/90 backdrop-blur-md border border-yellow-500/20 rounded-xl p-2 md:p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col gap-4">
                         {/* Decorative corners */}
                         <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-yellow-500/30 rounded-tl-xl"></div>
                         <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-yellow-500/30 rounded-tr-xl"></div>
@@ -128,7 +128,7 @@ const ReadingStage: React.FC<ReadingStageProps> = ({
                                 const originalCard = drawnCards[idx];
                                 return (
                                     <div key={idx} className="bg-indigo-950/40 border border-indigo-500/20 rounded-lg p-6 hover:bg-indigo-900/40 transition-colors flex flex-col gap-4">
-                                        <div className="flex items-center gap-4 border-b border-indigo-500/20 pb-4">
+                                        <div className="flex items-center gap-4 border-b border-indigo-500/20">
                                             <div className="w-16 h-24 rounded-lg overflow-hidden flex-shrink-0 shadow-lg border border-white/10">
                                                 {originalCard && (
                                                     <img 

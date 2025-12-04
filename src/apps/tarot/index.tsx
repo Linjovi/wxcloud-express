@@ -285,7 +285,7 @@ const App: React.FC<AppProps> = ({ onBack }) => {
         </p>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 relative z-10 w-full max-w-4xl mx-auto min-h-[600px]">
+      <main className="flex-1 flex flex-col items-center justify-center p-3 relative z-10 w-full max-w-4xl mx-auto min-h-[600px]">
 
         {stage === 'intro' && (
           <IntroStage
