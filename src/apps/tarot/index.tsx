@@ -58,6 +58,7 @@ const App: React.FC<AppProps> = ({ onBack }) => {
   });
 
   const [cutOffset, setCutOffset] = useState(0); // 0 = stacked, 1 = split
+  const [isCutSwapped, setIsCutSwapped] = useState(false); // Track if decks are swapped
 
   // Ref to track current stage for async callbacks
   const stageRef = useRef(stage);
@@ -115,7 +116,17 @@ const App: React.FC<AppProps> = ({ onBack }) => {
   const handleCutDeck = () => {
     setCutOffset(1);
     setTimeout(() => {
-      setCutOffset(0); // Merge back
+      setIsCutSwapped(true); // Swap order while split
+      
+      // Small delay to ensure swap logic applies before merging? 
+      // No, React state updates are batched or fast enough usually, 
+      // but let's just set cutOffset back to 0 in the next tick or same tick.
+      // Actually, setting them together is fine. The re-render will show them swapped and moving back.
+      
+      requestAnimationFrame(() => {
+          setCutOffset(0); // Merge back
+      });
+
       setTimeout(() => {
         setStage('drawing');
       }, 800);
@@ -128,6 +139,7 @@ const App: React.FC<AppProps> = ({ onBack }) => {
     setAnimatingCard(null);
     setGrabbedIndex(null);
     setCutOffset(0);
+    setIsCutSwapped(false);
     setPawState(prev => ({ ...prev, visible: false, phase: 'idle' }));
     switch (stage) {
       case 'input_question':
@@ -176,39 +188,39 @@ const App: React.FC<AppProps> = ({ onBack }) => {
 
     // 2. After reach animation, Grab
     setTimeout(() => {
-      debugger;
+      // debugger;
       setPawState(prev => ({ ...prev, phase: 'grabbing' }));
       setGrabbedIndex(index); // Hide the card immediately when grabbed
 
       // 3. Retract and start card flight
+      // Immediately retract
+      setPawState(prev => ({ ...prev, phase: 'retracting' }));
+
+      // Start card animation logic
+      // Logic to select card
+      const selectedCardIndex = Math.floor(Math.random() * deck.length);
+      const selectedCard = deck[selectedCardIndex];
+
+      // Trigger animation
+      // Use dynamic position names from the selected spread config
+      const positionInfo = selectedSpread.positions[drawnCards.length];
+      const newDrawnCard: DrawnCard = {
+        ...selectedCard,
+        position: positionInfo.name,
+        isRevealed: false
+      };
+
+      // Only update if we are still drawing (user didn't click back)
+      if (stageRef.current === 'drawing') {
+        setDrawnCards(prev => [...prev, newDrawnCard]);
+        setDrawnIndices(prev => [...prev, index]);
+        setAnimatingCard(null);
+      }
+
+      // Hide paw after retracting
       setTimeout(() => {
-        setPawState(prev => ({ ...prev, phase: 'retracting' }));
-
-        // Start card animation logic
-        // Logic to select card
-        const selectedCardIndex = Math.floor(Math.random() * deck.length);
-        const selectedCard = deck[selectedCardIndex];
-
-        // Trigger animation
-        // Use dynamic position names from the selected spread config
-        const positionInfo = selectedSpread.positions[drawnCards.length];
-        const newDrawnCard: DrawnCard = {
-          ...selectedCard,
-          position: positionInfo.name,
-          isRevealed: false
-        };
-
-        // Only update if we are still drawing (user didn't click back)
-        if (stageRef.current === 'drawing') {
-          setDrawnCards(prev => [...prev, newDrawnCard]);
-          setDrawnIndices(prev => [...prev, index]);
-          setAnimatingCard(null);
-        }
-
-        // Hide paw after retracting
         setPawState(prev => ({ ...prev, visible: false, phase: 'idle' }));
-
-      }, 200); // Grabbing duration
+      }, 400); // Wait for retraction animation
 
     }, 300); // Reaching duration
   };
@@ -304,6 +316,7 @@ const App: React.FC<AppProps> = ({ onBack }) => {
         {stage === 'cutting' && (
           <CuttingStage
             cutOffset={cutOffset}
+            isSwapped={isCutSwapped}
             onCut={handleCutDeck}
           />
         )}

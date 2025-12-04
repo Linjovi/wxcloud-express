@@ -247,7 +247,7 @@ const DrawingStage: React.FC<DrawingStageProps> = ({
                     top: pawState.targetY,
                     transform: pawState.phase === 'reaching' || pawState.phase === 'grabbing'
                         ? 'translate(-50%, -50%)'
-                        : 'translate(100%, 100%)' // Start/End position off-screen
+                        : 'translate(60vw, 60vh)' // Move far away to bottom-right
                 }}
             >
                 <div className={`cat-paw ${pawState.phase === 'grabbing' ? 'scale-95' : ''} transition-transform duration-200`}>

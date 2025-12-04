@@ -3,19 +3,35 @@ import { CARD_BACK_URL } from '../../constants';
 
 interface CuttingStageProps {
     cutOffset: number;
+    isSwapped?: boolean;
     onCut: () => void;
 }
 
-const CuttingStage: React.FC<CuttingStageProps> = ({ cutOffset, onCut }) => {
+const CuttingStage: React.FC<CuttingStageProps> = ({ cutOffset, isSwapped = false, onCut }) => {
+    
+    // Stack 1: Originally Top
+    // If swapped, it goes to bottom (zIndex lower, offset lower)
+    const stack1ZIndex = isSwapped ? 5 : 10;
+    const stack1Transform = cutOffset 
+        ? 'translateX(-60%) rotate(-5deg)' 
+        : (isSwapped ? 'translate(4px, 4px) rotate(0)' : 'translateX(0) rotate(0)');
+
+    // Stack 2: Originally Bottom
+    // If swapped, it goes to top (zIndex higher, offset 0)
+    const stack2ZIndex = isSwapped ? 10 : 5;
+    const stack2Transform = cutOffset
+        ? 'translateX(60%) rotate(5deg)'
+        : (isSwapped ? 'translate(0, 0) rotate(0)' : 'translate(4px, 4px) rotate(0)');
+
     return (
         <div className="flex flex-col items-center justify-center space-y-12 animate-fade-in">
             <div className="relative w-48 h-72 cursor-pointer group" onClick={onCut}>
-                {/* Stack 1 */}
+                {/* Stack 1 (Original Top) */}
                 <div
                     className="absolute inset-0 rounded-xl border border-white/10 shadow-2xl transition-all duration-700 ease-in-out bg-indigo-950"
                     style={{
-                        transform: cutOffset ? 'translateX(-60%) rotate(-5deg)' : 'translateX(0) rotate(0)',
-                        zIndex: 10
+                        transform: stack1Transform,
+                        zIndex: stack1ZIndex
                     }}
                 >
                     <img src={CARD_BACK_URL} className="w-full h-full object-cover rounded-xl" alt="" />
@@ -26,12 +42,12 @@ const CuttingStage: React.FC<CuttingStageProps> = ({ cutOffset, onCut }) => {
                     ))}
                 </div>
 
-                {/* Stack 2 (Base) */}
+                {/* Stack 2 (Original Bottom) */}
                 <div
                     className="absolute inset-0 rounded-xl border border-white/10 shadow-2xl transition-all duration-700 ease-in-out bg-indigo-950"
                     style={{
-                        transform: cutOffset ? 'translateX(60%) rotate(5deg)' : 'translate(4px, 4px) rotate(0)',
-                        zIndex: 5
+                        transform: stack2Transform,
+                        zIndex: stack2ZIndex
                     }}
                 >
                     <img src={CARD_BACK_URL} className="w-full h-full object-cover rounded-xl" alt="" />
@@ -44,9 +60,14 @@ const CuttingStage: React.FC<CuttingStageProps> = ({ cutOffset, onCut }) => {
                     点击切牌
                 </div>
             </div>
-            <p className="text-xl font-serif text-yellow-100 tracking-widest">
-                请点击牌堆切牌，注入你的能量喵
-            </p>
+            <div className="flex flex-col items-center gap-2">
+                <p className="text-xl font-serif text-yellow-100 tracking-widest animate-pulse">
+                    请点击牌堆切牌
+                </p>
+                <p className="text-xs text-indigo-300/60 font-serif tracking-[0.2em]">
+                    注入你的能量喵
+                </p>
+            </div>
         </div>
     );
 };

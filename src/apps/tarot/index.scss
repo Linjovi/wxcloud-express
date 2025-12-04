@@ -96,7 +96,48 @@
     }
 }
 
-// Cat Paw Styles
+// New Fancy Shuffle Animation
+@keyframes complexShuffle {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    15% {
+        // Split phase
+        transform: translate3d(calc(var(--split-dir) * 80px), 0, 0) rotate(calc(var(--split-dir) * 12deg));
+    }
+
+    40% {
+        // Hold split
+        transform: translate3d(calc(var(--split-dir) * 80px + var(--rand-x)), var(--rand-y), 20px) rotate(calc(var(--split-dir) * 12deg + var(--rand-rot)));
+    }
+
+    60% {
+        // Riffle back (start)
+        transform: translate3d(calc(var(--split-dir) * 40px), -20px, 40px) rotate(calc(var(--split-dir) * 4deg));
+    }
+
+    80% {
+        // Riffle complete (messy stack)
+        transform: translate3d(var(--rand-x), var(--rand-y), 0) rotate(var(--rand-rot));
+    }
+
+    100% {
+        // Neaten stack
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+}
+
+.card-shuffle-item {
+    /* Use a slightly longer duration and ease-in-out */
+    animation: complexShuffle 2.5s ease-in-out infinite;
+    /* Add delay based on index (handled in style prop), but maybe a base delay? */
+    transform-origin: bottom center;
+    will-change: transform;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+
 // Cat Paw Styles
 .cat-paw-container {
     position: fixed;
@@ -104,14 +145,13 @@
     pointer-events: none;
     transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     will-change: transform;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
 }
 
 .cat-paw {
     position: relative;
-    width: 140px;
-    height: 160px;
-    /* Rotate to look like reaching from bottom right */
+    width: 150px; /* Slightly wider */
+    height: 170px;
     transform: rotate(-25deg);
     transform-origin: bottom center;
 }
@@ -122,63 +162,61 @@
     right: 0;
     width: 100%;
     height: 100%;
-    background-color: #f0f0f0;
-    /* Slightly off-white for better depth */
-    /* Tapered shape: wider at top (toes), narrower at bottom (wrist) */
-    border-radius: 50px 50px 40px 40px;
-    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.05);
-    /* Inner shadow for volume */
+    background-color: #fffcf5; /* Creamier white */
+    /* Chubbier, rounder shape */
+    border-radius: 70px 70px 50px 50px;
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.03);
 }
 
-/* Main pad - Heart-ish shape */
+/* Main pad - Soft Heart shape */
 .paw-pad-main {
     position: absolute;
-    top: 55%;
+    top: 58%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 65px;
-    height: 50px;
-    background-color: #ffb7b2;
-    /* Inverted heart/triangular shape */
-    border-radius: 30px 30px 50px 50px;
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.2), inset -2px -2px 5px rgba(0, 0, 0, 0.05);
+    width: 75px;
+    height: 60px;
+    background-color: #ff9eb5; /* Cuter pink */
+    border-radius: 40% 40% 45% 45%;
+    /* Jelly texture shine */
+    box-shadow: inset 4px 4px 8px rgba(255, 255, 255, 0.4), 
+                inset -2px -2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Toes */
+/* Toes - Rounder and squishier */
 .paw-toe {
     position: absolute;
-    width: 24px;
-    height: 32px;
-    background-color: #ffb7b2;
-    border-radius: 50%;
-    box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.2), inset -1px -1px 3px rgba(0, 0, 0, 0.05);
+    width: 30px;
+    height: 36px;
+    background-color: #ff9eb5;
+    border-radius: 50% 50% 45% 45%;
+    box-shadow: inset 3px 3px 5px rgba(255, 255, 255, 0.4), 
+                inset -1px -1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* Correct selectors based on HTML structure: 
-   1: shadow, 2: fur, 3: pad, 4-7: toes 
-*/
+/* Adjusted toe positions for a cuter arch */
 .paw-toe:nth-child(4) {
-    left: 15px;
-    top: 35px;
-    transform: rotate(-20deg);
+    left: 12px;
+    top: 40px;
+    transform: rotate(-25deg);
 }
 
 .paw-toe:nth-child(5) {
-    left: 42px;
-    top: 15px;
-    transform: rotate(-5deg);
+    left: 44px;
+    top: 18px;
+    transform: rotate(-8deg);
 }
 
 .paw-toe:nth-child(6) {
-    left: 78px;
-    top: 15px;
-    transform: rotate(5deg);
+    left: 84px;
+    top: 18px;
+    transform: rotate(8deg);
 }
 
 .paw-toe:nth-child(7) {
-    left: 105px;
-    top: 35px;
-    transform: rotate(20deg);
+    left: 114px;
+    top: 40px;
+    transform: rotate(25deg);
 }
 
 .cat-paw-shadow {
@@ -187,9 +225,9 @@
     right: 5px;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 50px 50px 40px 40px;
-    filter: blur(6px);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 70px 70px 50px 50px;
+    filter: blur(8px);
     z-index: -1;
-    transform: translate(5px, 5px);
+    transform: translate(8px, 8px);
 }
