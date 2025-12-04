@@ -32,7 +32,7 @@ export const Home: React.FC<HomeProps> = ({
     >
       <div className="px-2">
         <h1 className="text-2xl font-black text-gray-800">欢迎来到</h1>
-        <h2 className="text-xl font-bold text-orange-500">喵星球 🪐</h2>
+        <h2 className="text-xl font-bold text-orange-500">呼噜呼噜事务所</h2>
       </div>
 
       <div className="space-y-4">

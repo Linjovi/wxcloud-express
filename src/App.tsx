@@ -51,7 +51,7 @@ const App: React.FC = () => {
   };
 
   const getTitle = () => {
-    if (appState === AppState.HOME) return "喵星球";
+    if (appState === AppState.HOME) return "呼噜呼噜事务所";
     if (appState === AppState.WEIBO_HOT_SEARCH) return "吃瓜喵";
     if (appState === AppState.ANSWER_BOOK) return "答案之书喵";
     if (appState === AppState.TAROT) return "塔罗秘境喵";
