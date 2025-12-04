@@ -1,4 +1,5 @@
-import { createDeepSeekClient, JudgementData } from "../utils";
+import { createDeepSeekClient } from "../utils";
+import { JudgementData } from "../types";
 
 interface JudgementResult {
   winner: "A" | "B" | "Draw";
