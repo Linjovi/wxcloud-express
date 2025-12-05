@@ -4,10 +4,11 @@ import {
   getWeiboHotSearch,
   getDouyinHotSearch,
   getXiaohongshuHotSearch,
+  getMaoyanWebHeat,
   getHotSearchSummary,
   SummaryData,
 } from "./api";
-import { HotSearchItem } from "./types";
+import { HotSearchItem, MaoyanWebHeatItem } from "./types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
@@ -16,10 +17,10 @@ interface HotSearchProps {
   onBack: () => void;
 }
 
-type Source = "weibo" | "douyin" | "xiaohongshu";
+type Source = "weibo" | "douyin" | "xiaohongshu" | "maoyan";
 
 interface SourceData {
-  list: HotSearchItem[];
+  list: (HotSearchItem | MaoyanWebHeatItem)[];
   summary?: string;
 }
 
@@ -28,6 +29,7 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
   const [weiboData, setWeiboData] = useState<SourceData | null>(null);
   const [douyinData, setDouyinData] = useState<SourceData | null>(null);
   const [xhsData, setXhsData] = useState<SourceData | null>(null);
+  const [maoyanData, setMaoyanData] = useState<SourceData | null>(null);
 
   const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
@@ -36,11 +38,13 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
     weibo: false,
     douyin: false,
     xiaohongshu: false,
+    maoyan: false,
   });
   const [error, setError] = useState<Record<Source, string | null>>({
     weibo: null,
     douyin: null,
     xiaohongshu: null,
+    maoyan: null,
   });
 
   const swiperRef = useRef<SwiperType | null>(null);
@@ -53,6 +57,8 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
         return douyinData;
       case "xiaohongshu":
         return xhsData;
+      case "maoyan":
+        return maoyanData;
       default:
         return null;
     }
@@ -69,6 +75,9 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
       case "xiaohongshu":
         setXhsData(data);
         break;
+      case "maoyan":
+        setMaoyanData(data);
+        break;
     }
   };
 
@@ -82,8 +91,10 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
         result = await getWeiboHotSearch();
       } else if (targetSource === "douyin") {
         result = await getDouyinHotSearch();
-      } else {
+      } else if (targetSource === "xiaohongshu") {
         result = await getXiaohongshuHotSearch();
+      } else {
+        result = await getMaoyanWebHeat();
       }
 
       const dataToStore = {
@@ -170,6 +181,7 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
     loadDataIfNeeded("douyin");
     loadDataIfNeeded("xiaohongshu");
     loadDataIfNeeded("weibo");
+    loadDataIfNeeded("maoyan");
     fetchSummary();
   }, []);
 
@@ -177,7 +189,7 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
     setSource(newSource);
     if (swiperRef.current) {
       const index =
-        newSource === "douyin" ? 0 : newSource === "xiaohongshu" ? 1 : 2;
+        newSource === "douyin" ? 0 : newSource === "xiaohongshu" ? 1 : newSource === "weibo" ? 2 : 3;
       swiperRef.current.slideTo(index);
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -266,12 +278,6 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
             <span
               key={idx}
               className="px-2 py-1 rounded-lg text-xs font-medium bg-white/50 border border-white/60 text-gray-600"
-              // style={{
-              //   fontSize: `${Math.max(
-              //     11,
-              //     Math.min(16, 11 + kw.weight * 0.5)
-              //   )}px`,
-              // }}
             >
               {kw.name}
             </span>
@@ -295,7 +301,9 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
                 ? "border-pink-200 border-t-pink-500"
                 : targetSource === "douyin"
                 ? "border-gray-200 border-t-black"
-                : "border-red-200 border-t-red-500"
+                : targetSource === "xiaohongshu"
+                ? "border-red-200 border-t-red-500"
+                : "border-cyan-200 border-t-cyan-500"
             }`}
           ></div>
           <p className="text-gray-400 text-xs font-medium">正在搬运大瓜...</p>
@@ -314,7 +322,9 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
                 ? "bg-pink-500"
                 : targetSource === "douyin"
                 ? "bg-black"
-                : "bg-red-500"
+                : targetSource === "xiaohongshu"
+                ? "bg-red-500"
+                : "bg-cyan-600"
             }`}
           >
             重试一下
@@ -325,64 +335,80 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
 
     return (
       <div className="space-y-2 animate-slide-up p-4 pt-0 pb-20">
-        {data?.list.map((item, index) => (
-          <a
-            key={index}
-            href={item.link || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block bg-white px-4 py-3 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100 active:scale-[0.99] transition-all relative overflow-hidden group hover:shadow-md"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-6 h-6 flex items-center justify-center rounded text-xs font-black shrink-0 ${getRankColor(
-                  item.rank
-                )}`}
-              >
-                {item.rank}
-              </div>
+        {data?.list.map((item, index) => {
+          // Handle Maoyan specific fields safely
+          const isMaoyan = targetSource === "maoyan";
+          const maoyanItem = isMaoyan ? (item as MaoyanWebHeatItem) : null;
+          const hotValue = isMaoyan ? maoyanItem?.heat : (item as HotSearchItem).hot;
+          const link = item.link || "#";
+          
+          return (
+            <a
+              key={index}
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-white px-4 py-3 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100 active:scale-[0.99] transition-all relative overflow-hidden group hover:shadow-md"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-6 h-6 flex items-center justify-center rounded text-xs font-black shrink-0 ${getRankColor(
+                    item.rank
+                  )}`}
+                >
+                  {item.rank}
+                </div>
 
-              <div className="flex-1 min-w-0 flex items-center gap-2">
-                <h3 className="font-medium text-gray-800 truncate text-[15px] group-hover:text-pink-600 transition-colors">
-                  {item.title}
-                </h3>
-                {item.iconType && (
-                  <span
-                    className={`text-[10px] font-bold shrink-0 px-1 py-0.5 rounded border border-current leading-none ${getIconColor(
-                      item.iconType
-                    )}`}
-                  >
-                    {item.iconType === "hot"
-                      ? "热"
-                      : item.iconType === "new"
-                      ? "新"
-                      : item.iconType === "boil"
-                      ? "沸"
-                      : item.iconType === "fei"
-                      ? "飞"
-                      : item.iconType === "recommend"
-                      ? "荐"
-                      : item.iconType === "pinned"
-                      ? "置顶"
-                      : item.iconType === "first"
-                      ? "首发"
-                      : item.iconType === "exclusive"
-                      ? "独家"
-                      : item.iconType === "rumor"
-                      ? "辟谣"
-                      : item.iconType}
-                  </span>
+                <div className="flex-1 min-w-0">
+                   <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-gray-800 truncate text-[15px] group-hover:text-pink-600 transition-colors">
+                        {item.title}
+                      </h3>
+                      {item.iconType && (
+                        <span
+                          className={`text-[10px] font-bold shrink-0 px-1 py-0.5 rounded border border-current leading-none ${getIconColor(
+                            item.iconType
+                          )}`}
+                        >
+                          {item.iconType === "hot"
+                            ? "热"
+                            : item.iconType === "new"
+                            ? "新"
+                            : item.iconType === "boil"
+                            ? "沸"
+                            : item.iconType === "fei"
+                            ? "飞"
+                            : item.iconType === "recommend"
+                            ? "荐"
+                            : item.iconType === "pinned"
+                            ? "置顶"
+                            : item.iconType === "first"
+                            ? "首发"
+                            : item.iconType === "exclusive"
+                            ? "独家"
+                            : item.iconType === "rumor"
+                            ? "辟谣"
+                            : item.iconType}
+                        </span>
+                      )}
+                   </div>
+                   {isMaoyan && maoyanItem && (
+                       <div className="flex gap-2 text-xs text-gray-400 mt-1">
+                           <span className="bg-gray-50 px-1.5 rounded text-gray-500">{maoyanItem.platform}</span>
+                           <span>{maoyanItem.releaseInfo}</span>
+                       </div>
+                   )}
+                </div>
+
+                {hotValue && hotValue !== "0" && (
+                  <div className="text-xs text-gray-400 font-mono shrink-0 tabular-nums opacity-80">
+                    {hotValue}
+                  </div>
                 )}
               </div>
-
-              {item.hot && item.hot !== "0" && (
-                <div className="text-xs text-gray-400 font-mono shrink-0 tabular-nums opacity-80">
-                  {item.hot}
-                </div>
-              )}
-            </div>
-          </a>
-        ))}
+            </a>
+          );
+        })}
 
         {!isLoading && !isError && (
           <div className="mt-6 text-center">
@@ -393,7 +419,9 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
                   ? "text-gray-400 hover:text-pink-500"
                   : targetSource === "douyin"
                   ? "text-gray-400 hover:text-black"
-                  : "text-gray-400 hover:text-red-500"
+                  : targetSource === "xiaohongshu"
+                  ? "text-gray-400 hover:text-red-500"
+                  : "text-gray-400 hover:text-cyan-600"
               }`}
             >
               <svg
@@ -463,6 +491,18 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
                 <span className="text-base">🔴</span> 微博
               </div>
             </button>
+            <button
+              onClick={() => handleTabChange("maoyan")}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${
+                source === "maoyan"
+                  ? "bg-white text-cyan-600 shadow-sm scale-[1.02]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                <span className="text-base">🎬</span> 网剧
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -477,7 +517,13 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
           onSlideChange={(swiper) => {
             const index = swiper.activeIndex;
             const newSource =
-              index === 0 ? "douyin" : index === 1 ? "xiaohongshu" : "weibo";
+              index === 0
+                ? "douyin"
+                : index === 1
+                ? "xiaohongshu"
+                : index === 2
+                ? "weibo"
+                : "maoyan";
             setSource(newSource);
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
@@ -491,6 +537,9 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
           </SwiperSlide>
           <SwiperSlide className="h-full overflow-y-auto no-scrollbar">
             {renderList("weibo")}
+          </SwiperSlide>
+          <SwiperSlide className="h-full overflow-y-auto no-scrollbar">
+            {renderList("maoyan")}
           </SwiperSlide>
         </Swiper>
       </div>

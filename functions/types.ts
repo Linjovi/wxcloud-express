@@ -15,6 +15,25 @@ export interface DouyinHotSearchItem {
   iconType: string | null;
 }
 
+export interface MaoyanHotItem {
+  rank: number;
+  title: string;
+  boxOffice: string;
+  releaseTime: string;
+  movieId: number;
+  link: string;
+}
+
+export interface MaoyanWebHeatItem {
+  rank: number;
+  title: string;
+  heat: string;
+  platform: string;
+  releaseInfo: string;
+  link: string;
+  iconType: string | null;
+}
+
 export interface JudgementData {
   nameA: string;
   nameB: string;
@@ -32,4 +51,3 @@ export interface TarotRequestData {
 export interface Env {
   DEEPSEEK_API_KEY: string;
 }
-
