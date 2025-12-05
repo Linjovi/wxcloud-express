@@ -82,7 +82,6 @@ const App: React.FC = () => {
             <Home
               onSelectJudge={() => setAppState(AppState.INPUT)}
               onSelectGossip={() => setAppState(AppState.WEIBO_HOT_SEARCH)}
-              onSelectAnswerBook={() => setAppState(AppState.ANSWER_BOOK)}
               onSelectTarot={() => setAppState(AppState.TAROT)}
             />
           )}
