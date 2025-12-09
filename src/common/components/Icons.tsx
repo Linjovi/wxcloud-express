@@ -10,7 +10,7 @@ export const CatJudgeAvatar = ({
     className={`${className} relative overflow-hidden rounded-full border-4 border-orange-200 shadow-xl bg-white`}
   >
     <img
-      src="https://youke1.picui.cn/s1/2025/12/03/692faaa15bad9.png"
+      src="https://pic1.imgdb.cn/item/6938116c00233646958db30e.png"
       alt="Anime Cat Judge"
       className="w-full h-full object-cover transform scale-110"
     />
@@ -26,7 +26,7 @@ export const GossipCatAvatar = ({
     className={`${className} relative overflow-hidden rounded-full border-4 border-pink-200 shadow-xl bg-white`}
   >
     <img
-      src="https://youke1.picui.cn/s1/2025/12/03/692fa6396f905.png"
+      src="https://pic1.imgdb.cn/item/6938117f00233646958db3b6.png"
       alt="Gossip Cat"
       className="w-full h-full object-cover"
     />
@@ -187,7 +187,7 @@ export const TarotCatAvatar = ({
     className={`${className} relative overflow-hidden rounded-full border-4 border-purple-200 shadow-xl bg-purple-50`}
   >
     <img
-      src="https://youke1.picui.cn/s1/2025/12/03/692ff0a6164b5.png"
+      src="https://pic1.imgdb.cn/item/6938119300233646958db43a.png"
       alt="Fortune Cat"
       className="w-full h-full object-cover transform scale-110"
     />

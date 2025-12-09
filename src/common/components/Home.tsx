@@ -21,7 +21,7 @@ export const Home: React.FC<HomeProps> = ({
       className="p-4 space-y-6 pt-8 pb-20 animate-fade-in"
       style={{
         backgroundImage:
-          "url('https://youke1.picui.cn/s1/2025/12/03/692fd7e701482.png')",
+          "url('https://pic1.imgdb.cn/item/6938113900233646958db1ac.png')",
         backgroundSize: "50%",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right top",
@@ -37,7 +37,7 @@ export const Home: React.FC<HomeProps> = ({
         <button
           style={{
             backgroundImage:
-              "url('https://youke1.picui.cn/s1/2025/12/03/692faa7489134.png')",
+              "url('https://pic1.imgdb.cn/item/693811a000233646958db453.png')",
             backgroundSize: "70%",
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
@@ -89,7 +89,7 @@ export const Home: React.FC<HomeProps> = ({
           onClick={onSelectGossip}
           style={{
             backgroundImage:
-              "url('https://youke1.picui.cn/s1/2025/12/03/692fa5ac28f87.png')",
+              "url('https://pic1.imgdb.cn/item/693811ab00233646958db46d.png')",
             backgroundSize: "70%",
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
@@ -137,7 +137,7 @@ export const Home: React.FC<HomeProps> = ({
         <button
           style={{
             backgroundImage:
-              "url('https://youke1.picui.cn/s1/2025/12/03/692ff02f94dd5.png')",
+              "url('https://pic1.imgdb.cn/item/693811d900233646958db503.png')",
             backgroundSize: "70%",
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",

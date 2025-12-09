@@ -23,7 +23,7 @@ const LOADING_MESSAGES = [
   "正在汇聚宇宙的能量喵..."
 ];
 
-const TAROT_CAT_AVATAR = "https://youke1.picui.cn/s1/2025/12/03/692ff02f94dd5.png";
+const TAROT_CAT_AVATAR = "https://pic1.imgdb.cn/item/693811d900233646958db503.png";
 
 interface AppProps {
   onBack: () => void;
