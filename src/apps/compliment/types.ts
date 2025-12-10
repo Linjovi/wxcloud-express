@@ -4,4 +4,11 @@ export interface ComplimentResponse {
   score: number;
   catBreed: string;
   pickupLine: string;
+  outfitEvaluation: string;
+  outfitScore: number;
+  outfitAdvice?: string;
+  validSubject: boolean;
+  errorHint: string;
+
+
 }

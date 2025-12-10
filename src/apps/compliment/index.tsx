@@ -46,6 +46,8 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
       try {
         const data = await getCompliment(content);
         setResult(data);
+
+
       } catch (error) {
         alert("夸夸喵好像睡着了，请稍后再试喵~");
       } finally {
@@ -140,58 +142,95 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
           {/* Result State */}
           {result && !loading && (
             <div className="w-full mt-6 animate-fade-in-up space-y-4">
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 justify-center">
-                {result.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="bg-yellow-100 text-yellow-600 text-xs font-bold px-3 py-1 rounded-full"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-                <span className="bg-red-100 text-red-500 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                  萌力值 {result.score} <SparklesIcon className="w-3 h-3" />
-                </span>
-              </div>
-
-              {/* Cat Breed Lookalike */}
-              {result.catBreed && (
-                <div className="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-start gap-3">
-                  <div>
-                    <h3 className="text-orange-800 font-bold text-sm mb-1">
-                      猫系长相鉴定
-                    </h3>
-                    <p className="text-orange-600 text-xs leading-relaxed">
-                      {result.catBreed}
-                    </p>
+              {/* Error Hint for Invalid Subject */}
+              {!result.validSubject ? (
+                <div className="bg-red-50 border border-red-200 p-4 rounded-xl text-center">
+                  <p className="text-red-500 font-bold mb-2">喵呜？</p>
+                  <p className="text-red-400 text-sm">{result.errorHint}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {result.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="bg-yellow-100 text-yellow-600 text-xs font-bold px-3 py-1 rounded-full"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                    <span className="bg-red-100 text-red-500 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                      萌力值 {result.score} <SparklesIcon className="w-3 h-3" />
+                    </span>
                   </div>
-                </div>
-              )}
 
-              {/* Compliment Text */}
-              <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 relative">
-                <div className="absolute -top-3 -left-2 text-4xl text-yellow-300">
-                  ❝
-                </div>
-                <p className="text-gray-700 font-medium leading-relaxed text-justify indent-4 relative z-10">
-                  {result.compliment}
-                </p>
-                <div className="absolute -bottom-6 -right-2 text-4xl rotate-180 text-yellow-300">
-                  ❝
-                </div>
-              </div>
+                  {/* Cat Breed Lookalike */}
+                  {result.catBreed && (
+                    <div className="bg-orange-50 border border-orange-100 p-3 rounded-xl flex items-start gap-3">
+                      <div>
+                        <h3 className="text-orange-800 font-bold text-sm mb-1">
+                          猫系长相鉴定
+                        </h3>
+                        <p className="text-orange-600 text-xs leading-relaxed">
+                          {result.catBreed}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-              {/* Pickup Line */}
-              {result.pickupLine && (
-                <div className="relative mt-2 mx-2">
-                  <div className="bg-white border-2 border-yellow-400 rounded-2xl p-3 shadow-sm relative z-10">
-                    <p className="text-yellow-600 font-bold text-sm text-center">
-                      “{result.pickupLine}”
+                  {/* Outfit Evaluation */}
+                  {result.outfitEvaluation && (
+                    <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-purple-800 font-bold text-sm">
+                          穿搭点评
+                        </h3>
+                        <span className="bg-purple-200 text-purple-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                          {result.outfitScore}分
+                        </span>
+                      </div>
+                      <p className="text-purple-600 text-xs leading-relaxed italic">
+                        “{result.outfitEvaluation}”
+                      </p>
+                      {result.outfitAdvice && (
+                        <div className="mt-2 pt-2 border-t border-purple-200">
+                          <p className="text-purple-800 text-xs font-bold mb-1">💡 喵喵小建议：</p>
+                          <p className="text-purple-600 text-xs leading-relaxed">
+                            {result.outfitAdvice}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Compliment Text */}
+                  <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 relative">
+                    <div className="absolute -top-3 -left-2 text-4xl text-yellow-300">
+                      ❝
+                    </div>
+                    <p className="text-gray-700 font-medium leading-relaxed text-justify indent-4 relative z-10">
+                      {result.compliment}
                     </p>
+                    <div className="absolute -bottom-6 -right-2 text-4xl rotate-180 text-yellow-300">
+                      ❝
+                    </div>
                   </div>
-                  <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-4 h-4 bg-white border-r-2 border-b-2 border-yellow-400 rotate-45 z-0"></div>
-                </div>
+
+                  {/* Pickup Line */}
+                  {result.pickupLine && (
+                    <div className="relative mt-2 mx-2">
+                      <div className="bg-white border-2 border-yellow-400 rounded-2xl p-3 shadow-sm relative z-10">
+                        <p className="text-yellow-600 font-bold text-sm text-center">
+                          “{result.pickupLine}”
+                        </p>
+                      </div>
+                      <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-4 h-4 bg-white border-r-2 border-b-2 border-yellow-400 rotate-45 z-0"></div>
+                    </div>
+                  )}
+
+
+                </>
               )}
 
               <div className="flex justify-center pt-2">
