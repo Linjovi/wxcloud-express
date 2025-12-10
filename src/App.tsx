@@ -10,6 +10,7 @@ import TarotApp from "./apps/tarot/index";
 import { AppState } from "./common/types";
 import { ConflictData, VerdictResult } from "./apps/judge/types";
 import { getCatJudgement } from "./apps/judge/api";
+import { SEO } from "./common/components/SEO";
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.HOME);
@@ -64,9 +65,53 @@ const App: React.FC = () => {
     return "light";
   };
 
+  const getSEODetails = () => {
+    switch (appState) {
+      case AppState.WEIBO_HOT_SEARCH:
+        return {
+          title: "吃瓜喵 - 实时热搜聚合",
+          description: "吃瓜喵为您聚合微博、抖音等平台的实时热搜，让您第一时间掌握网络热点，轻松吃瓜。",
+          keywords: "微博热搜, 抖音热搜, 吃瓜, 实时热点, 娱乐新闻"
+        };
+      case AppState.ANSWER_BOOK:
+        return {
+          title: "答案之书喵 - 心灵指引",
+          description: "心中的疑惑无法解答？来问问答案之书喵，为您提供神秘的心灵指引和人生解答。",
+          keywords: "答案之书, 心理测试, 占卜, 趣味问答, 心灵指引"
+        };
+      case AppState.TAROT:
+        return {
+          title: "塔罗秘境喵 - 在线塔罗牌占卜",
+          description: "塔罗秘境喵提供专业的在线塔罗牌占卜服务，通过神秘的塔罗牌阵为您解析运势、爱情与事业。",
+          keywords: "塔罗牌, 在线占卜, 运势分析, 塔罗测试, 星座运势"
+        };
+      case AppState.INPUT:
+      case AppState.THINKING:
+      case AppState.RESULT:
+        return {
+          title: "法官喵 - 趣味纠纷裁决",
+          description: "生活中有小摩擦？让公正可爱的猫猫法官为您断案，用幽默风趣的方式化解矛盾。",
+          keywords: "猫猫法官, 趣味裁决, 矛盾调解, 幽默应用, 情感咨询"
+        };
+      default:
+        return {
+          title: "呼噜呼噜事务所 - 您的趣味生活助手",
+          description: "呼噜呼噜事务所提供猫猫法官裁决、吃瓜热搜、塔罗占卜等趣味功能，为您提供温暖与乐趣。",
+          keywords: "猫猫法官, 塔罗牌, 热搜, 趣味应用, 呼噜呼噜事务所"
+        };
+    }
+  };
+
+  const seoDetails = getSEODetails();
+
   return (
     // Mobile-first container constraint
     <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title={seoDetails.title}
+        description={seoDetails.description}
+        keywords={seoDetails.keywords}
+      />
       <div className="mx-auto min-h-screen bg-[#f9fafb] shadow-2xl relative">
         {appState !== AppState.HOME && (
           <NavBar
