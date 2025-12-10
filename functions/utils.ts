@@ -1,10 +1,78 @@
 import { HotSearchItem, DouyinHotSearchItem, MaoyanHotItem, MaoyanWebHeatItem } from "./types";
-
-// Helper to create OpenAI client (using fetch implementation for Workers)
-// Note: We use the official openai library but it needs to be installed.
-// If not, we can use a simple fetch wrapper.
-// For Cloudflare Pages, we can assume 'openai' is in package.json at root.
 import OpenAI from "openai";
+
+// --- Cache Implementation ---
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const CACHE_DURATION = 30 * 60 * 1000; // 10 minutes in milliseconds
+
+const CACHE: {
+  weibo: CacheEntry<HotSearchItem[]> | null;
+  douyin: CacheEntry<DouyinHotSearchItem[]> | null;
+  xiaohongshu: CacheEntry<HotSearchItem[]> | null;
+  maoyanWeb: CacheEntry<MaoyanWebHeatItem[]> | null;
+} = {
+  weibo: null,
+  douyin: null,
+  xiaohongshu: null,
+  maoyanWeb: null,
+};
+
+// --- JSON Repair Utility ---
+export function safeParseJSON(jsonString: string): any {
+  if (!jsonString) return null;
+
+  // 1. Remove markdown code blocks
+  let content = jsonString
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  // 2. Try standard parse
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    // Continue to advanced repair if simple parse fails
+  }
+
+  // 3. Extract JSON object/array if embedded in other text
+  const firstBrace = content.indexOf('{');
+  const firstBracket = content.indexOf('[');
+  
+  let start = -1;
+  let end = -1;
+
+  if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+    start = firstBrace;
+    end = content.lastIndexOf('}') + 1;
+  } else if (firstBracket !== -1) {
+    start = firstBracket;
+    end = content.lastIndexOf(']') + 1;
+  }
+
+  if (start !== -1 && end !== -1) {
+    content = content.substring(start, end);
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      // Continue to more aggressive repair
+    }
+  }
+
+  // 4. Basic cleanup for common issues (trailing commas, etc - risky but helpful for simple cases)
+  try {
+     // Remove trailing commas before } or ]
+     const cleaned = content.replace(/,\s*([\]}])/g, '$1');
+     return JSON.parse(cleaned);
+  } catch (e) {
+    console.error("JSON Repair failed:", e);
+    return null;
+  }
+}
 
 export function createDeepSeekClient(env: any) {
   if (!env.DEEPSEEK_API_KEY) {
@@ -67,6 +135,11 @@ const getMaoyanParams = async () => {
 }
 
 export async function getMaoyanWebHeat(): Promise<MaoyanWebHeatItem[]> {
+  // Check Cache
+  if (CACHE.maoyanWeb && Date.now() - CACHE.maoyanWeb.timestamp < CACHE_DURATION) {
+    return CACHE.maoyanWeb.data;
+  }
+
   try {
     const params = await getMaoyanParams()
     const sig = await getMaoyanSig(params.toString())
@@ -86,7 +159,7 @@ export async function getMaoyanWebHeat(): Promise<MaoyanWebHeatItem[]> {
       return [];
     }
 
-    return data.webList.data.list.map((item: any, idx: number) => ({
+    const list = data.webList.data.list.map((item: any, idx: number) => ({
       rank: idx + 1,
       title: item.seriesInfo.name,
       heat: item.currHeatDesc,
@@ -96,8 +169,18 @@ export async function getMaoyanWebHeat(): Promise<MaoyanWebHeatItem[]> {
       iconType: idx < 3 ? 'hot' : null
     }));
 
+    // Update Cache
+    CACHE.maoyanWeb = {
+      data: list,
+      timestamp: Date.now()
+    };
+
+    return list;
+
   } catch (error) {
     console.error("Maoyan Web Heat fetch error:", error);
+    // If cache exists (even if expired), return it as fallback
+    if (CACHE.maoyanWeb) return CACHE.maoyanWeb.data;
     return [];
   }
 }
@@ -163,6 +246,11 @@ export async function getMaoyanHistory(): Promise<MaoyanHotItem[]> {
 
 // --- Weibo Hot Search (Regex Version) ---
 export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
+  // Check Cache
+  if (CACHE.weibo && Date.now() - CACHE.weibo.timestamp < CACHE_DURATION) {
+    return CACHE.weibo.data;
+  }
+
   try {
     const response = await fetch(
       "https://s.weibo.com/top/summary?cate=realtimehot",
@@ -271,15 +359,28 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
       }
     });
 
+    // Update Cache
+    CACHE.weibo = {
+      data: list,
+      timestamp: Date.now()
+    };
+
     return list;
   } catch (e) {
     console.error("Weibo fetch error:", e);
+    // Return cached if available
+    if (CACHE.weibo) return CACHE.weibo.data;
     return [];
   }
 }
 
 // --- Douyin Hot Search ---
 export async function getDouyinHotSearch(): Promise<DouyinHotSearchItem[]> {
+  // Check Cache
+  if (CACHE.douyin && Date.now() - CACHE.douyin.timestamp < CACHE_DURATION) {
+    return CACHE.douyin.data;
+  }
+
   try {
     const response = await fetch(
       "https://aweme-lq.snssdk.com/aweme/v1/hot/search/list/?aid=1128&version_code=880",
@@ -293,23 +394,37 @@ export async function getDouyinHotSearch(): Promise<DouyinHotSearchItem[]> {
     const data: any = await response.json();
 
     if (data && data.data && Array.isArray(data.data.word_list)) {
-      return data.data.word_list.map((item: any, index: number) => ({
+      const list = data.data.word_list.map((item: any, index: number) => ({
         rank: index + 1,
         title: item.word,
         hot: (item.hot_value / 10000).toFixed(1) + "万",
         link: `https://www.douyin.com/search/${encodeURIComponent(item.word)}`,
         iconType: index < 3 ? "hot" : null,
       }));
+
+      // Update Cache
+      CACHE.douyin = {
+        data: list,
+        timestamp: Date.now()
+      };
+      
+      return list;
     }
     return [];
   } catch (error) {
     console.error("Douyin fetch error:", error);
+    if (CACHE.douyin) return CACHE.douyin.data;
     return [];
   }
 }
 
 // --- Xiaohongshu Hot Search ---
 export async function getXiaohongshuHotSearch(): Promise<HotSearchItem[]> {
+  // Check Cache
+  if (CACHE.xiaohongshu && Date.now() - CACHE.xiaohongshu.timestamp < CACHE_DURATION) {
+    return CACHE.xiaohongshu.data;
+  }
+
   const xhsApiUrl = "https://edith.xiaohongshu.com/api/sns/v1/search/hot_list";
   const xhsHeaders = {
     "User-Agent":
@@ -331,7 +446,7 @@ export async function getXiaohongshuHotSearch(): Promise<HotSearchItem[]> {
     const data: any = await response.json();
 
     if (data && data.data && Array.isArray(data.data.items)) {
-      return data.data.items.map((item: any, idx: number) => ({
+      const list = data.data.items.map((item: any, idx: number) => ({
         rank: idx + 1,
         title: item.title,
         link: `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(
@@ -340,10 +455,19 @@ export async function getXiaohongshuHotSearch(): Promise<HotSearchItem[]> {
         hot: item.score,
         iconType: mapIconType(item.word_type),
       }));
+
+      // Update Cache
+      CACHE.xiaohongshu = {
+        data: list,
+        timestamp: Date.now()
+      };
+      
+      return list;
     }
     return [];
   } catch (error) {
     console.error("Xiaohongshu fetch error:", error);
+    if (CACHE.xiaohongshu) return CACHE.xiaohongshu.data;
     return [];
   }
 }

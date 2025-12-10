@@ -1,40 +1,10 @@
 import { 
   getWeiboHotSearch, 
   getDouyinHotSearch, 
-  getXiaohongshuHotSearch, 
+  getXiaohongshuHotSearch,
+  safeParseJSON,
 } from "../utils";
-import { GoogleGenAI, Type, Schema } from "@google/genai";
-
-const summarySchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    summary: {
-      type: Type.STRING,
-      description: "A short, witty, 'cat-style' daily summary (max 150 chars) of what's happening. Use cat puns (喵, 捏, 爪) and emojis.",
-    },
-    mood: {
-      type: Type.STRING,
-      description: "The overall internet vibe (e.g., 'Eating Melon', 'Angry', 'Touching', 'Funny').",
-    },
-    moodScore: {
-      type: Type.INTEGER,
-      description: "Mood Score from 0 (Very Negative) to 100 (Very Positive/Exciting).",
-    },
-    keywords: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          name: { type: Type.STRING, description: "Keyword or entity name." },
-          weight: { type: Type.INTEGER, description: "Weight (1-10) based on frequency/importance." },
-        },
-        required: ["name", "weight"],
-      },
-      description: "8-12 popular keywords/entities from the titles.",
-    },
-  },
-  required: ["summary", "mood", "moodScore", "keywords"],
-};
+import { GoogleGenAI } from "@google/genai";
 
 export async function onRequestGet(context: any) {
   try {
@@ -60,17 +30,28 @@ export async function onRequestGet(context: any) {
 Role: You are "Gossip Cat" (吃瓜喵), a cute, trendy, and slightly sassy cat who loves internet gossip.
 
 Task:
-1. **Summary**: Write a short, witty, "cat-style" daily summary (max 150 chars) of what's happening. Use cat puns (喵, 捏, 爪) and emojis. Be funny and engaging.
-2. **Mood Analysis**: Analyze the overall internet vibe (e.g., "Eating Melon", "Angry", "Touching", "Funny").
-3. **Mood Score**: 0 (Very Negative) to 100 (Very Positive/Exciting).
-4. **Keywords**: Extract 8-12 popular keywords/entities from the titles for a word cloud. Assign a weight (1-10) based on frequency/importance.
+1. **Scan**: Look at the provided hot search titles from Weibo, Douyin, and Xiaohongshu.
+2. **Select**: Pick the **single most interesting, dramatic, or funny topic** (e.g., celebrity gossip, weird news, social trends). Prioritize "eating melon" (gossip) value over political/serious news unless it's huge.
+3. **Research**: **You MUST use Google Search** to find the latest, juicy details about this specific topic. Do not just rely on the title. Find out the context!
+4. **Summarize**:
+   - **If a good topic is found**: Write a witty, "cat-style" summary (max 200 chars) focusing on this specific event. Tell the user what happened in a fun way. Use cat puns (喵, 捏, 爪) and emojis.
+   - **If nothing is interesting**: Just say something like "喵... 今天好像没有什么特别的大瓜，本喵要去晒太阳了" (Meow... nothing big today, I'm going to sunbathe).
+5. **Output**: Return a strictly valid JSON object. Do not output markdown code blocks.
 
 Input Data (Top 10 Hot Searches from 3 Platforms):
 Weibo: ${JSON.stringify(topTitles.weibo)}
 Douyin: ${JSON.stringify(topTitles.douyin)}
 Xiaohongshu: ${JSON.stringify(topTitles.xiaohongshu)}
 
-Response Format: JSON ONLY based on the schema.
+Required JSON Format:
+{
+  "summary": "string (The witty summary)",
+  "mood": "string (e.g., 'Eating Melon', 'Shocked', 'Funny')",
+  "moodScore": number (0-100),
+  "keywords": [
+    { "name": "string", "weight": number (1-10) }
+  ]
+}
 `;
 
     const ai = new GoogleGenAI({ apiKey });
@@ -78,12 +59,11 @@ Response Format: JSON ONLY based on the schema.
 
     const response = await ai.models.generateContent({
       model: modelId,
-      contents: "Start analyzing the gossip meow!",
+      contents: "Start analyzing the gossip and search for details meow!",
       config: {
         systemInstruction: systemInstruction,
-        responseMimeType: "application/json",
-        responseSchema: summarySchema,
         temperature: 0.7,
+        tools: [{ googleSearch: {} }], // Enable Google Search Grounding
       },
     });
 
@@ -92,13 +72,18 @@ Response Format: JSON ONLY based on the schema.
       throw new Error("Gossip Cat is napping and didn't respond.");
     }
 
-    let result;
-    try {
-        result = JSON.parse(content);
-    } catch (e) {
-        console.error("JSON Parse Error:", e);
+    const result = safeParseJSON(content);
+
+    if (!result) {
+        console.error("Failed to parse JSON content:", content);
         // Fallback
-        result = { summary: "喵？今天好像没有什么特别的新闻捏。", mood: "平静", moodScore: 50, keywords: [] };
+        return new Response(JSON.stringify({
+          code: 0,
+          message: "Success (Fallback)",
+          data: { summary: "喵？今天好像没有什么特别的大瓜捏。", mood: "平静", moodScore: 50, keywords: [] }
+        }), {
+          headers: { "Content-Type": "application/json" }
+        });
     }
 
     return new Response(JSON.stringify({

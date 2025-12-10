@@ -7,4 +7,5 @@ export enum AppState {
   WEIBO_HOT_SEARCH,
   ANSWER_BOOK,
   TAROT,
+  COMPLIMENT,
 }

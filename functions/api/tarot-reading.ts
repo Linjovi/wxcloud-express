@@ -1,5 +1,6 @@
 import { TarotRequestData } from "../types";
 import { GoogleGenAI, Type, Schema } from "@google/genai";
+import { safeParseJSON } from "../utils";
 
 const tarotSchema: Schema = {
   type: Type.OBJECT,
@@ -86,15 +87,14 @@ ${formattedCards}
         throw new Error("塔罗猫睡着了");
     }
     
-    let result;
-    try {
-        result = JSON.parse(content);
-    } catch (e) {
-        console.error("JSON Parse Error:", e);
+    let result = safeParseJSON(content);
+
+    if (!result) {
+        console.error("JSON Parse Error with safeParseJSON, content:", content);
         result = {
             intro: "喵？水晶球显示的影像有点模糊，直接把看到的告诉你吧...",
             cards: [],
-            conclusion: content // Show raw text if parse fails
+            conclusion: content // Show raw text as conclusion fallback
         };
     }
 

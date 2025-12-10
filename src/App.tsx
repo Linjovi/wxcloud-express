@@ -7,6 +7,7 @@ import { Home } from "./common/components/Home";
 import { HotSearch } from "./apps/hot-search/HotSearch";
 import { AnswerBook } from "./apps/answer/index";
 import TarotApp from "./apps/tarot/index";
+import ComplimentApp from "./apps/compliment/index";
 import { AppState } from "./common/types";
 import { ConflictData, VerdictResult } from "./apps/judge/types";
 import { getCatJudgement } from "./apps/judge/api";
@@ -45,7 +46,8 @@ const App: React.FC = () => {
       appState === AppState.INPUT ||
       appState === AppState.WEIBO_HOT_SEARCH ||
       appState === AppState.ANSWER_BOOK ||
-      appState === AppState.TAROT
+      appState === AppState.TAROT ||
+      appState === AppState.COMPLIMENT
     ) {
       setAppState(AppState.HOME);
     }
@@ -56,6 +58,7 @@ const App: React.FC = () => {
     if (appState === AppState.WEIBO_HOT_SEARCH) return "吃瓜喵";
     if (appState === AppState.ANSWER_BOOK) return "答案之书喵";
     if (appState === AppState.TAROT) return "塔罗秘境喵";
+    if (appState === AppState.COMPLIMENT) return "夸夸喵";
     return "法官喵";
   };
 
@@ -84,6 +87,12 @@ const App: React.FC = () => {
           title: "塔罗秘境喵 - 在线塔罗牌占卜",
           description: "塔罗秘境喵提供专业的在线塔罗牌占卜服务，通过神秘的塔罗牌阵为您解析运势、爱情与事业。",
           keywords: "塔罗牌, 在线占卜, 运势分析, 塔罗测试, 星座运势"
+        };
+      case AppState.COMPLIMENT:
+        return {
+          title: "夸夸喵 - 专业彩虹屁生成器",
+          description: "上传照片，让夸夸喵为你生成超可爱的彩虹屁！治愈你的不开心，发现生活中的美。",
+          keywords: "夸夸群, 彩虹屁, 猫咪, 治愈, 趣味生成器"
         };
       case AppState.INPUT:
       case AppState.THINKING:
@@ -128,6 +137,7 @@ const App: React.FC = () => {
               onSelectJudge={() => setAppState(AppState.INPUT)}
               onSelectGossip={() => setAppState(AppState.WEIBO_HOT_SEARCH)}
               onSelectTarot={() => setAppState(AppState.TAROT)}
+              onSelectCompliment={() => setAppState(AppState.COMPLIMENT)}
             />
           )}
 
@@ -153,6 +163,10 @@ const App: React.FC = () => {
 
           {appState === AppState.TAROT && (
             <TarotApp onBack={() => setAppState(AppState.HOME)} />
+          )}
+
+          {appState === AppState.COMPLIMENT && (
+            <ComplimentApp onBack={handleBack} />
           )}
         </main>
       </div>

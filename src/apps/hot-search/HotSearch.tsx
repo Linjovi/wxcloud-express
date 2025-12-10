@@ -162,7 +162,7 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
 
     if (cachedData && cachedTime) {
       const now = Date.now();
-      if (now - parseInt(cachedTime) < 3600000) {
+      if (now - parseInt(cachedTime) < 1800000) {
         try {
           const parsedData = JSON.parse(cachedData);
           setCurrentData(targetSource, parsedData);

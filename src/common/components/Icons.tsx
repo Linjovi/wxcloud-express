@@ -188,7 +188,24 @@ export const TarotCatAvatar = ({
   >
     <img
       src="https://pic1.imgdb.cn/item/6938119300233646958db43a.png"
-      alt="Fortune Cat"
+      alt="Tarot Cat"
+      className="w-full h-full object-cover transform scale-110"
+    />
+  </div>
+);
+
+export const ComplimentCatAvatar = ({
+  className = "w-24 h-24",
+}: {
+  className?: string;
+}) => (
+  <div
+    className={`${className} relative overflow-hidden rounded-full border-4 border-yellow-200 shadow-xl bg-yellow-50`}
+  >
+    {/* Using a bright/happy cat image for Compliment Cat */}
+    <img
+      src="https://pic1.imgdb.cn/item/693921056166b8110136209c.png"
+      alt="Compliment Cat"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>
