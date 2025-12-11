@@ -468,8 +468,15 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
   return (
     <div className="h-screen bg-white flex flex-col relative">
       <div className="absolute top-0 left-0 w-full h-[280px] bg-gradient-to-b from-orange-100 via-pink-50 to-transparent pointer-events-none z-0" />
-      <div className="sticky top-0 z-20 bg-white/0 backdrop-blur-sm flex-shrink-0 pt-12">
-        {/* Header Removed */}
+      <div className="top-0 z-20 bg-white/0 backdrop-blur-sm flex-shrink-0 pt-4">
+        <div className="flex items-center gap-3 px-6 mb-2">
+          <h1 className="text-2xl font-black text-pink-600 tracking-wider">
+            吃瓜喵
+          </h1>
+          <p className="text-xs text-pink-500 font-bold opacity-80">
+            全网热瓜 · 一网打尽
+          </p>
+        </div>
 
         {renderSummarySection()}
 

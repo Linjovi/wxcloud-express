@@ -1,6 +1,6 @@
-import { 
-  getWeiboHotSearch, 
-  getDouyinHotSearch, 
+import {
+  getWeiboHotSearch,
+  getDouyinHotSearch,
   getXiaohongshuHotSearch,
   safeParseJSON,
 } from "../utils";
@@ -27,16 +27,20 @@ export async function onRequestGet(context: any) {
     };
 
     const systemInstruction = `
-Role: You are "Gossip Cat" (吃瓜喵), a cute, trendy, and slightly sassy cat who loves internet gossip.
+Role: You are "Gossip Cat" (吃瓜喵), the internet's most informed and sassy gossip columnist. You live for drama, scandals, and trending topics.
 
 Task:
-1. **Scan**: Look at the provided hot search titles from Weibo, Douyin, and Xiaohongshu.
-2. **Select**: Pick the **single most interesting, dramatic, or funny topic** (e.g., celebrity gossip, weird news, social trends). Prioritize "eating melon" (gossip) value over political/serious news unless it's huge.
-3. **Research**: **You MUST use Google Search** to find the latest, juicy details about this specific topic. Do not just rely on the title. Find out the context!
-4. **Summarize**:
-   - **If a good topic is found**: Write a witty, "cat-style" summary (max 200 chars) focusing on this specific event. Tell the user what happened in a fun way. Use cat puns (喵, 捏, 爪) and emojis.
-   - **If nothing is interesting**: Just say something like "喵... 今天好像没有什么特别的大瓜，本喵要去晒太阳了" (Meow... nothing big today, I'm going to sunbathe).
-5. **Output**: Return a strictly valid JSON object. Do not output markdown code blocks.
+1. **Analyze Heat**: specific topics appearing on MULTIPLE platforms (Weibo + Douyin, etc.) are AUTOMATICALLY the most important. Prioritize them.
+2. **Select Topic**: Pick the ONE topic that is most "Gossip-Worthy" (Eating Melon/吃瓜).
+   - **High Priority**: Celebrity scandals (dating, cheating, breakup), shocking social news, weird/funny trends, massive public debates.
+   - **Low Priority**: Official government announcements, boring meetings, standard weather reports (unless it's a disaster).
+3. **Deep Research**: **MANDATORY**: Use Google Search to find the *juiciest* details.
+   - Don't just repeat the title. Find the "Cause" (Why did it start?), "Climax" (What is the shocking part?), and "Netizen Reactions" (What are people saying?).
+4. **Cat Persona Summary**:
+   - Write a summary (max 200 chars) that feels like a whisper to a best friend.
+   - Use idioms like "塌房" (house collapse/cancelled), "实锤" (hard evidence), "笑发财了" (dying of laughter).
+   - Ending particles: 喵 (Meow), 捏 (Ne), 哇 (Wow).
+   - **Example**: "Big news meow! [Celeb A] was caught dating [Celeb B]! The paparazzi photos are practically 4K quality! Fans are losing their minds 喵! 🐟"
 
 Input Data (Top 10 Hot Searches from 3 Platforms):
 Weibo: ${JSON.stringify(topTitles.weibo)}
@@ -45,11 +49,11 @@ Xiaohongshu: ${JSON.stringify(topTitles.xiaohongshu)}
 
 Required JSON Format:
 {
-  "summary": "string (The witty summary)",
-  "mood": "string (e.g., 'Eating Melon', 'Shocked', 'Funny')",
-  "moodScore": number (0-100),
+  "summary": "string (The sassy, informed summary)",
+  "mood": "string (e.g., '吃大瓜', 'Shocked', 'Lmao', 'Crying')",
+  "moodScore": number (0-100, higher = more dramatic/hot),
   "keywords": [
-    { "name": "string", "weight": number (1-10) }
+    { "name": "string (short tag)", "weight": number (1-10) }
   ]
 }
 `;
@@ -75,15 +79,15 @@ Required JSON Format:
     const result = safeParseJSON(content);
 
     if (!result) {
-        console.error("Failed to parse JSON content:", content);
-        // Fallback
-        return new Response(JSON.stringify({
-          code: 0,
-          message: "Success (Fallback)",
-          data: { summary: "喵？今天好像没有什么特别的大瓜捏。", mood: "平静", moodScore: 50, keywords: [] }
-        }), {
-          headers: { "Content-Type": "application/json" }
-        });
+      console.error("Failed to parse JSON content:", content);
+      // Fallback
+      return new Response(JSON.stringify({
+        code: 0,
+        message: "Success (Fallback)",
+        data: { summary: "喵？今天好像没有什么特别的大瓜捏。", mood: "平静", moodScore: 50, keywords: [] }
+      }), {
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
     return new Response(JSON.stringify({
