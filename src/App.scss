@@ -213,6 +213,15 @@ body {
   color: #c04100;
 }
 
+/* Global scrollbar hiding */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

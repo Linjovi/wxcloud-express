@@ -7,19 +7,64 @@ interface CacheEntry<T> {
   timestamp: number;
 }
 
-const CACHE_DURATION = 30 * 60 * 1000; // 10 minutes in milliseconds
+export interface ComplimentStyle {
+  title: string;
+  prompt: string;
+}
+
+const DEFAULT_STYLES: Record<string, string> = {
+  "清除路人": "专业后期修图，智能移除画面背景中的路人、杂物和干扰元素，智能填充背景，保持画面自然完整，构图干净整洁。",
+  "更换场景": "保持人物主体光影和透视关系不变，将背景环境智能替换为：",
+  "一键美化": "大师级人像精修，自然磨皮美白，亮眼提神，五官立体化，肤色均匀通透，调整光影质感，增强画面清晰度，杂志封面级修图。",
+  "动漫风格": "二次元动漫风格，日本动画电影质感，新海诚画风，唯美光影，细腻笔触，梦幻色彩，2D插画效果。",
+  "更换天气": "调整环境天气效果，模拟自然真实的气象氛围，将天气更改为："
+};
+
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 const CACHE: {
   weibo: CacheEntry<HotSearchItem[]> | null;
   douyin: CacheEntry<DouyinHotSearchItem[]> | null;
   xiaohongshu: CacheEntry<HotSearchItem[]> | null;
   maoyanWeb: CacheEntry<MaoyanWebHeatItem[]> | null;
+  complimentStyles: CacheEntry<ComplimentStyle[]> | null;
 } = {
   weibo: null,
   douyin: null,
   xiaohongshu: null,
   maoyanWeb: null,
+  complimentStyles: null,
 };
+
+// ...
+
+export function setComplimentStylesCache(styles: ComplimentStyle[]) {
+  CACHE.complimentStyles = {
+    data: styles,
+    timestamp: Date.now()
+  };
+}
+
+export function getComplimentStylesCache() {
+  if (CACHE.complimentStyles && Date.now() - CACHE.complimentStyles.timestamp < CACHE_DURATION) {
+    return CACHE.complimentStyles.data;
+  }
+  return null;
+}
+
+export function getComplimentStylePrompt(title: string): string | null {
+  // Check default styles first
+  if (DEFAULT_STYLES[title]) {
+    return DEFAULT_STYLES[title];
+  }
+
+  // Check if cache exists and not expired (though logic for reading expired might be acceptable if strict consistency isn't needed)
+  if (CACHE.complimentStyles) {
+    const style = CACHE.complimentStyles.data.find(s => s.title === title || `🔥 ${s.title}` === title || s.title === title.replace(/^🔥\s*/, ''));
+    return style ? style.prompt : null;
+  }
+  return null;
+}
 
 // --- JSON Repair Utility ---
 export function safeParseJSON(jsonString: string): any {

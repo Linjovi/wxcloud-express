@@ -1,0 +1,112 @@
+import { getDouyinHotSearch, getXiaohongshuHotSearch, createDeepSeekClient, safeParseJSON, setComplimentStylesCache, getComplimentStylesCache, ComplimentStyle } from "../utils";
+
+interface StyleResponseItem {
+  label: string;
+  text: string;
+}
+
+export async function onRequestGet(context: any) {
+  try {
+    const cachedStyles = getComplimentStylesCache();
+    if (cachedStyles) {
+      return new Response(JSON.stringify({
+        code: 0,
+        message: "Success (Cached)",
+        data: cachedStyles.map(s => ({
+          title: s.title
+        })),
+      }), {
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    const [douyin, xiaohongshu] = await Promise.all([
+      getDouyinHotSearch(),
+      getXiaohongshuHotSearch(),
+    ]);
+
+    const allItems = [...douyin, ...xiaohongshu];
+    // Simple deduplication
+    const uniqueTitles = Array.from(new Set(allItems.map(i => i.title)));
+    
+    // Take top 50 to analyze
+    const titlesToAnalyze = uniqueTitles.slice(0, 50);
+
+    let styles: ComplimentStyle[] = [];
+
+    // Try DeepSeek
+    try {
+      const client = createDeepSeekClient(context.env);
+      
+      const completion = await client.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content: `你是一个专业的视觉风格分析师。
+任务：从提供的热搜标题中，筛选出适合作为“照片风格化/滤镜/AI写真/换装”主题的标题（例如涉及妆容、穿搭、氛围感、摄影风格、二次元、特定的电影感等）。
+对于每个选中的标题，生成一个详细的修图提示词（Prompt），用于将普通照片转换为该风格。提示词应包含光影、色调、材质、氛围、服装、动作等的具体描述。
+输出要求：
+1. 严格返回 JSON 数组格式。
+2. 每个元素包含 "title" (原标题) 和 "prompt" (提示词)。
+3. 只返回最适合的前 5-10 个。
+`
+          },
+          {
+            role: "user",
+            content: `热搜列表：\n${JSON.stringify(titlesToAnalyze)}`
+          }
+        ],
+        model: "deepseek-chat",
+        temperature: 1.1,
+        response_format: { type: "json_object" }
+      });
+
+      const content = completion.choices[0].message.content || "";
+      const parsed = safeParseJSON(content);
+      
+      // Handle variations in JSON structure
+      const list = Array.isArray(parsed) ? parsed : (parsed.styles || parsed.list || []);
+
+      if (Array.isArray(list) && list.length > 0) {
+        styles = list.map((item: any) => ({
+          title: item.title,
+          prompt: item.prompt
+        }));
+      }
+
+    } catch (aiError) {
+      console.error("Deepseek API Error:", aiError);
+      // Continue to fallback
+    }
+
+    // Fallback if AI failed or returned nothing
+    if (styles.length === 0) {
+      const keywords = [
+        "妆", "风", "感", "照", "穿搭", "滤镜", "写真", "图", "颜", "美学",
+        "ootd", "OOTD", "色调", "氛围", "复古", "港风", "少年", "少女",
+      ];
+      styles = allItems
+        .filter((item) => keywords.some((k) => item.title.includes(k)))
+        .map((item) => ({
+          title: item.title,
+          prompt: `请参考“${item.title}”的风格，对这张照片进行风格化调整`,
+        }))
+        .slice(0, 20);
+    }
+
+    setComplimentStylesCache(styles);
+
+    return new Response(JSON.stringify({
+      code: 0,
+      message: "Success",
+      data: styles.map(s => ({
+        title: s.title
+      })),
+    }), {
+      headers: { "Content-Type": "application/json" }
+    });
+
+  } catch (e: any) {
+    return new Response(JSON.stringify({ code: 500, message: e.message }), { status: 500 });
+  }
+}
