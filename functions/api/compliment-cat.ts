@@ -40,9 +40,20 @@ export async function onRequestPost(context: any) {
       throw new Error("GRSAI_API_KEY is not set");
     }
 
+    const systemInstruction = `
+Role: You are an Expert AI Image Editor.
+Task: Edit the supplied image according to the user's detailed instruction.
+Guidelines:
+1. **Professional Quality**: Ensure the edited result is photorealistic, high-resolution, and visually stunning.
+2. **Precise Execution**: Follow the user's request exactly. If they ask for a specific change (e.g., "remove background"), do it cleanly.
+3. **Preserve Details**: Maintain the original identity, lighting, and style of the key subjects unless explicitly asked to change them.
+4. **Enhancement**: If the user's instruction is vague (e.g., "make it better"), apply professional color grading, lighting adjustments, and subtle beauty enhancements to create a magazine-quality photo.
+Output: You must return a JSON object containing the 'base64Image' of the edited result.
+    `;
+
     const payload = {
       model: "nano-banana-pro",
-      prompt: finalPrompt,
+      prompt: `${systemInstruction}\n\nInstruction: ${finalPrompt}`,
       image: image, // Assuming API accepts base64 string in 'image' field
       stream: !!stream,
     };
