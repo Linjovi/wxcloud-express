@@ -1,10 +1,5 @@
 import { getDouyinHotSearch, getXiaohongshuHotSearch, createDeepSeekClient, safeParseJSON, setComplimentStylesCache, getComplimentStylesCache, ComplimentStyle } from "../utils";
 
-interface StyleResponseItem {
-  label: string;
-  text: string;
-}
-
 export async function onRequestGet(context: any) {
   try {
     const cachedStyles = getComplimentStylesCache();
@@ -38,17 +33,16 @@ export async function onRequestGet(context: any) {
     try {
       const client = createDeepSeekClient(context.env);
       
-      const completion = await client.chat.completions.create({
+      // Step 1: Select Titles (Fast)
+      const selectionCompletion = await client.chat.completions.create({
         messages: [
           {
             role: "system",
             content: `你是一个专业的视觉风格分析师。
 任务：从提供的热搜标题中，筛选出适合作为“照片风格化/滤镜/AI写真/换装”主题的标题（例如涉及妆容、穿搭、氛围感、摄影风格、二次元、特定的电影感等）。
-对于每个选中的标题，生成一个详细的修图提示词（Prompt），用于将普通照片转换为该风格。提示词应包含光影、色调、材质、氛围、服装、动作等的具体描述。
 输出要求：
-1. 严格返回 JSON 数组格式。
-2. 每个元素包含 "title" (原标题) 和 "prompt" (提示词)。
-3. 只返回最适合的前 5-10 个。
+1. 严格返回 JSON 对象：{"titles": ["标题1", "标题2", ...]}
+2. 只返回最适合的前 5-10 个。
 `
           },
           {
@@ -57,26 +51,67 @@ export async function onRequestGet(context: any) {
           }
         ],
         model: "deepseek-chat",
-        temperature: 1.1,
+        temperature: 1.0,
         response_format: { type: "json_object" }
       });
 
-      const content = completion.choices[0].message.content || "";
-      const parsed = safeParseJSON(content);
-      
-      // Handle variations in JSON structure
-      const list = Array.isArray(parsed) ? parsed : (parsed.styles || parsed.list || []);
+      const selectionContent = selectionCompletion.choices[0].message.content || "";
+      const parsedSelection = safeParseJSON(selectionContent);
+      const selectedTitles = parsedSelection.titles || parsedSelection.list || [];
 
-      if (Array.isArray(list) && list.length > 0) {
-        styles = list.map((item: any) => ({
-          title: item.title,
-          prompt: item.prompt
+      if (Array.isArray(selectedTitles) && selectedTitles.length > 0) {
+        // Initialize styles with empty prompts and cache immediately
+        styles = selectedTitles.map((t: string) => ({
+          title: t,
+          prompt: "" 
         }));
+        setComplimentStylesCache(styles);
+
+        // Step 2: Generate Prompts (Async Background Task)
+        context.waitUntil((async () => {
+          try {
+            const promptCompletion = await client.chat.completions.create({
+              messages: [
+                {
+                  role: "system",
+                  content: `你是一个专业的 AI 绘画提示词专家。
+任务：为以下主题生成详细的 Stable Diffusion/Midjourney 修图提示词（Prompt）。
+提示词应包含光影、色调、材质、氛围、服装、动作等的具体描述。
+输出要求：
+1. 严格返回 JSON 数组，每个元素包含 "title" (原标题) 和 "prompt" (提示词)。
+`
+                },
+                {
+                  role: "user",
+                  content: `主题列表：\n${JSON.stringify(selectedTitles)}`
+                }
+              ],
+              model: "deepseek-chat",
+              temperature: 1.1,
+              response_format: { type: "json_object" }
+            });
+
+            const promptContent = promptCompletion.choices[0].message.content || "";
+            const parsedPrompts = safeParseJSON(promptContent);
+            const list = Array.isArray(parsedPrompts) ? parsedPrompts : (parsedPrompts.styles || parsedPrompts.list || []);
+
+            if (Array.isArray(list) && list.length > 0) {
+               // Update cache with prompts
+               const updatedStyles = list.map((item: any) => ({
+                 title: item.title,
+                 prompt: item.prompt
+               }));
+               setComplimentStylesCache(updatedStyles);
+            }
+          } catch (err) {
+            console.error("Async Prompt Generation Error:", err);
+          }
+        })());
       }
 
     } catch (aiError) {
       console.error("Deepseek API Error:", aiError);
-      // Continue to fallback
+      // Continue to fallback if empty
     }
 
     // Fallback if AI failed or returned nothing
@@ -92,9 +127,9 @@ export async function onRequestGet(context: any) {
           prompt: `请参考“${item.title}”的风格，对这张照片进行风格化调整`,
         }))
         .slice(0, 20);
+      
+      setComplimentStylesCache(styles);
     }
-
-    setComplimentStylesCache(styles);
 
     return new Response(JSON.stringify({
       code: 0,

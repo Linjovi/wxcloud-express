@@ -230,3 +230,102 @@ body {
   scrollbar-width: none;
 }
 
+/* Page Transition Animations - 类似移动客户端的翻页效果 */
+.page-transition-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-transition-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  will-change: transform, opacity;
+  background: #f9fafb;
+}
+
+/* 空闲状态 - 正常显示 */
+.page-transition-wrapper.page-idle {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 1;
+  position: relative;
+}
+
+/* 前进动画：新页面从右侧滑入 */
+.page-transition-wrapper.page-enter.forward {
+  z-index: 2;
+  animation: slideInFromRight 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* 前进动画：旧页面向左滑出 */
+.page-transition-wrapper.page-exit.forward {
+  z-index: 1;
+  animation: slideOutToLeft 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* 后退动画：新页面从左侧滑入 */
+.page-transition-wrapper.page-enter.backward {
+  z-index: 2;
+  animation: slideInFromLeft 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* 后退动画：旧页面向右滑出 */
+.page-transition-wrapper.page-exit.backward {
+  z-index: 1;
+  animation: slideOutToRight 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* 前进：从右侧滑入 */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0.95;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 前进：向左滑出 */
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-25%);
+    opacity: 0.7;
+  }
+}
+
+/* 后退：从左侧滑入 */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.95;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 后退：向右滑出 */
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(25%);
+    opacity: 0.7;
+  }
+}
+

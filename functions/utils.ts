@@ -20,7 +20,7 @@ const DEFAULT_STYLES: Record<string, string> = {
   "更换天气": "调整环境天气效果，模拟自然真实的气象氛围，将天气更改为："
 };
 
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+const CACHE_DURATION = 60 * 60 * 1000; // 60 minutes in milliseconds
 
 const CACHE: {
   weibo: CacheEntry<HotSearchItem[]> | null;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Home } from "./common/components/Home";
 import { HotSearch } from "./apps/hot-search/HotSearch";
@@ -8,9 +8,54 @@ import ComplimentApp from "./apps/compliment/index";
 import { JudgeApp } from "./apps/judge/JudgeApp";
 import { SEO } from "./common/components/SEO";
 
+// 路由深度映射，用于判断前进/后退
+const routeDepth: Record<string, number> = {
+  "/": 0,
+  "/judge": 1,
+  "/hot-search": 1,
+  "/answer": 1,
+  "/tarot": 1,
+  "/compliment": 1,
+};
+
 const App: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [prevLocation, setPrevLocation] = useState(location);
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevLocationRef = useRef<string>(location.pathname);
+  const isInitialMount = useRef<boolean>(true);
+
+  useEffect(() => {
+    // 跳过初始加载的过渡
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const currentDepth = routeDepth[location.pathname] ?? 1;
+    const prevDepth = routeDepth[prevLocationRef.current] ?? 1;
+    
+    // 判断导航方向
+    const isBackward = currentDepth < prevDepth || 
+                       (location.pathname === "/" && prevLocationRef.current !== "/");
+    
+    setDirection(isBackward ? "backward" : "forward");
+    
+    if (location.pathname !== prevLocationRef.current) {
+      setIsTransitioning(true);
+      
+      // 动画完成后更新显示的位置
+      const timer = setTimeout(() => {
+        setPrevLocation(location);
+        setIsTransitioning(false);
+      }, 350);
+      
+      prevLocationRef.current = location.pathname;
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname]);
 
   const handleBack = () => {
     if (location.pathname === "/") return;
@@ -78,26 +123,57 @@ const App: React.FC = () => {
         description={seoDetails.description}
         keywords={seoDetails.keywords}
       />
-      <div className="mx-auto min-h-screen bg-[#f9fafb] shadow-2xl relative">
-        <main className="w-full">
-          <Routes>
-            <Route path="/" element={
-              <Home
-                onSelectJudge={() => navigate("/judge")}
-                onSelectGossip={() => navigate("/hot-search")}
-                onSelectTarot={() => navigate("/tarot")}
-                onSelectCompliment={() => navigate("/compliment")}
-              />
-            } />
-            <Route path="/judge" element={<JudgeApp />} />
-            <Route path="/hot-search" element={<HotSearch onBack={handleBack} />} />
-            <Route path="/answer" element={<AnswerBook onBack={handleBack} />} />
-            <Route path="/tarot" element={<TarotApp onBack={handleBack} />} />
-            <Route path="/compliment" element={<ComplimentApp onBack={handleBack} />} />
+      <div className="mx-auto min-h-screen bg-[#f9fafb] shadow-2xl relative overflow-hidden">
+        <main className="w-full page-transition-container">
+          {/* 旧页面 - 退出动画 */}
+          {isTransitioning && (
+            <div 
+              className={`page-transition-wrapper page-exit ${direction}`}
+              key={`prev-${prevLocation.pathname}`}
+            >
+              <Routes location={prevLocation}>
+                <Route path="/" element={
+                  <Home
+                    onSelectJudge={() => navigate("/judge")}
+                    onSelectGossip={() => navigate("/hot-search")}
+                    onSelectTarot={() => navigate("/tarot")}
+                    onSelectCompliment={() => navigate("/compliment")}
+                  />
+                } />
+                <Route path="/judge" element={<JudgeApp />} />
+                <Route path="/hot-search" element={<HotSearch onBack={handleBack} />} />
+                <Route path="/answer" element={<AnswerBook onBack={handleBack} />} />
+                <Route path="/tarot" element={<TarotApp onBack={handleBack} />} />
+                <Route path="/compliment" element={<ComplimentApp onBack={handleBack} />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </div>
+          )}
+          
+          {/* 新页面 - 进入动画 */}
+          <div 
+            className={`page-transition-wrapper ${isTransitioning ? `page-enter ${direction}` : "page-idle"}`}
+            key={`current-${location.pathname}`}
+          >
+            <Routes location={location}>
+              <Route path="/" element={
+                <Home
+                  onSelectJudge={() => navigate("/judge")}
+                  onSelectGossip={() => navigate("/hot-search")}
+                  onSelectTarot={() => navigate("/tarot")}
+                  onSelectCompliment={() => navigate("/compliment")}
+                />
+              } />
+              <Route path="/judge" element={<JudgeApp />} />
+              <Route path="/hot-search" element={<HotSearch onBack={handleBack} />} />
+              <Route path="/answer" element={<AnswerBook onBack={handleBack} />} />
+              <Route path="/tarot" element={<TarotApp onBack={handleBack} />} />
+              <Route path="/compliment" element={<ComplimentApp onBack={handleBack} />} />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
         </main>
       </div>
     </div>

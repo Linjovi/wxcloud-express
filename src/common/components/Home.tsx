@@ -1,10 +1,4 @@
-import React from "react";
-import {
-  CatJudgeAvatar,
-  GossipCatAvatar,
-  TarotCatAvatar,
-  ComplimentCatAvatar,
-} from "./Icons";
+import React, { useState } from "react";
 
 interface HomeProps {
   onSelectJudge: () => void;
@@ -19,223 +13,94 @@ export const Home: React.FC<HomeProps> = ({
   onSelectTarot,
   onSelectCompliment,
 }) => {
+  const [hoveredArea, setHoveredArea] = useState<string | null>(null);
+
+  const mapImageUrl = "https://pic1.imgdb.cn/item/693e46c5b297d4843ce57ea3.jpg"; // 如果图片在public目录，使用这个路径
+
   return (
-    <div
-      className="p-4 space-y-6 pt-8 pb-20 animate-fade-in"
-      style={{
-        backgroundImage:
-          "url('https://pic1.imgdb.cn/item/6938113900233646958db1ac.png')",
-        backgroundSize: "50%",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "right top",
-      }}
-    >
-      <div className="px-2">
-        <h1 className="text-2xl font-black text-gray-800">欢迎来到</h1>
-        <h2 className="text-xl font-bold text-orange-500">呼噜呼噜事务所</h2>
-      </div>
-
-      <div className="space-y-4">
-        {/* Cat Judge App */}
-        <button
-          style={{
-            backgroundImage:
-              "url('https://pic1.imgdb.cn/item/693811a000233646958db453.png')",
-            backgroundSize: "70%",
-            backgroundPosition: "140% bottom",
-            backgroundRepeat: "no-repeat",
+    <div className="relative w-full min-h-screen bg-gradient-to-b from-yellow-50 via-green-50 to-blue-50 overflow-hidden">
+      {/* 地图图片容器 */}
+      <div
+        className="relative w-full"
+        style={{ aspectRatio: "4/3", minHeight: "100vh" }}
+      >
+        <img
+          src={mapImageUrl}
+          alt="呼噜呼噜事务所地图"
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // 如果图片加载失败，显示占位符
+            const target = e.target as HTMLImageElement;
+            target.style.display = "none";
+            const placeholder = document.getElementById("map-placeholder");
+            if (placeholder) placeholder.style.display = "block";
           }}
-          onClick={onSelectJudge}
-          className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
+        />
+
+        {/* 可点击区域 - 猫剧院 (顶部) - 对应夸夸喵 */}
+        <button
+          onClick={onSelectCompliment}
+          onMouseEnter={() => setHoveredArea("theatre")}
+          onMouseLeave={() => setHoveredArea(null)}
+          className="absolute top-[20%] left-[25%] w-[50%] h-[15%]"
+          title="猫剧院 - 夸夸喵"
         >
-          <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-orange-100 to-transparent rounded-bl-full opacity-50"></div>
-
-          <div className="relative">
-            <div className="absolute inset-0 bg-orange-100 rounded-full blur-md opacity-50 group-hover:opacity-80 transition-opacity"></div>
-            <CatJudgeAvatar className="w-16 h-16 relative z-10" />
-          </div>
-
-          <div className="flex-1 text-left z-10">
-            <h3 className="font-bold text-gray-800 text-lg">猫猫法官</h3>
-            <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-              吵架了？让本法官来评评理！
-            </p>
-            <div className="mt-2 flex gap-2">
-              <span className="bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-orange-100">
-                热门 🔥
-              </span>
-              <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-100">
-                情感调解
-              </span>
+          {hoveredArea === "theatre" && (
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap shadow-lg">
+              夸夸喵 💛
             </div>
-          </div>
-
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-orange-50 group-hover:text-orange-400 transition-colors z-10">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
+          )}
         </button>
 
-        {/* Gossip Cat App */}
+        {/* 可点击区域 - 猫法庭 (中间) - 对应猫猫法官 */}
+        <button
+          onClick={onSelectJudge}
+          onMouseEnter={() => setHoveredArea("courthouse")}
+          onMouseLeave={() => setHoveredArea(null)}
+          className="absolute top-[40%] left-[30%] w-[40%] h-[15%]"
+          title="猫法庭 - 猫猫法官"
+        >
+          {hoveredArea === "courthouse" && (
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap shadow-lg">
+              猫猫法官 ⚖️
+            </div>
+          )}
+        </button>
+
+        {/* 可点击区域 - 西瓜农场 (左下) - 对应吃瓜喵 */}
         <button
           onClick={onSelectGossip}
-          style={{
-            backgroundImage:
-              "url('https://pic1.imgdb.cn/item/693811ab00233646958db46d.png')",
-            backgroundSize: "70%",
-            backgroundPosition: "140% bottom",
-            backgroundRepeat: "no-repeat",
-          }}
-          className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
+          onMouseEnter={() => setHoveredArea("farm")}
+          onMouseLeave={() => setHoveredArea(null)}
+          className="absolute top-[55%] left-[5%] w-[40%] h-[12%]"
+          title="西瓜农场 - 吃瓜喵"
         >
-          <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-pink-100 to-transparent rounded-bl-full opacity-50"></div>
-
-          <div className="relative">
-            <div className="absolute inset-0 bg-pink-100 rounded-full blur-md opacity-50 group-hover:opacity-80 transition-opacity"></div>
-            <GossipCatAvatar className="w-16 h-16 relative z-10" />
-          </div>
-
-          <div className="flex-1 text-left z-10">
-            <h3 className="font-bold text-gray-800 text-lg">吃瓜喵</h3>
-            <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-              全网热瓜，一网打尽！
-            </p>
-            <div className="mt-2 flex gap-2">
-              <span className="bg-pink-50 text-pink-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-pink-100">
-                实时热搜 🍉
-              </span>
+          {hoveredArea === "farm" && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap shadow-lg">
+              吃瓜喵 🍉
             </div>
-          </div>
-
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-pink-50 group-hover:text-pink-400 transition-colors z-10">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
+          )}
         </button>
 
-        {/* Taro Cat App */}
+        {/* 可点击区域 - 占卜师帐篷 (右下) - 对应塔罗喵 */}
         <button
-          style={{
-            backgroundImage:
-              "url('https://pic1.imgdb.cn/item/693811d900233646958db503.png')",
-            backgroundSize: "70%",
-            backgroundPosition: "140% bottom",
-            backgroundRepeat: "no-repeat",
-          }}
           onClick={onSelectTarot}
-          className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
+          onMouseEnter={() => setHoveredArea("tent")}
+          onMouseLeave={() => setHoveredArea(null)}
+          className="absolute top-[55%] right-[5%] w-[35%] h-[15%]"
+          title="占卜师帐篷 - 塔罗喵"
         >
-          <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-purple-100 to-transparent rounded-bl-full opacity-50"></div>
-
-          <div className="relative">
-            <div className="absolute inset-0 bg-purple-100 rounded-full blur-md opacity-50 group-hover:opacity-80 transition-opacity"></div>
-            <TarotCatAvatar className="w-16 h-16 relative z-10" />
-          </div>
-
-          <div className="flex-1 text-left z-10">
-            <h3 className="font-bold text-gray-800 text-lg">神秘の塔罗喵</h3>
-            <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-              猫猫占卜师，为你解答人生疑惑！
-            </p>
-            <div className="mt-2 flex gap-2">
-              <span className="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-purple-100">
-                玄学占卜 ✨
-              </span>
+          {hoveredArea === "tent" && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap shadow-lg">
+              塔罗喵 ✨
             </div>
-          </div>
-
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-purple-50 group-hover:text-purple-400 transition-colors z-10">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
+          )}
         </button>
+      </div>
 
-        {/* Compliment Cat App */}
-        <button
-          style={{
-            backgroundImage:
-              "url('https://pic1.imgdb.cn/item/693921056166b8110136209d.png')",
-            backgroundSize: "70%",
-            backgroundPosition: "140% bottom",
-            backgroundRepeat: "no-repeat",
-          }}
-          onClick={onSelectCompliment}
-          className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-yellow-100 to-transparent rounded-bl-full opacity-50"></div>
-
-          <div className="relative">
-            <div className="absolute inset-0 bg-yellow-100 rounded-full blur-md opacity-50 group-hover:opacity-80 transition-opacity"></div>
-            <ComplimentCatAvatar className="w-16 h-16 relative z-10" />
-          </div>
-
-          <div className="flex-1 text-left z-10">
-            <h3 className="font-bold text-gray-800 text-lg">夸夸喵</h3>
-            <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-              不开心？让本喵来狠狠夸你！
-            </p>
-            <div className="mt-2 flex gap-2">
-              <span className="bg-yellow-50 text-yellow-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-yellow-100">
-                治愈系 💛
-              </span>
-            </div>
-          </div>
-
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-yellow-50 group-hover:text-yellow-400 transition-colors z-10">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
-        </button>
-
-        {/* Placeholder for 'More' */}
-        <div className="w-full bg-gray-100/50 p-4 rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center gap-2 text-gray-400">
-          <span className="text-lg">🏗️</span>
-          <span className="text-sm font-bold">更多应用建设中...</span>
-        </div>
+      {/* 标题提示 */}
+      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
+        <h1 className="text-lg font-black text-gray-800">呼噜呼噜事务所</h1>
       </div>
     </div>
   );
