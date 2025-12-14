@@ -148,6 +148,18 @@ export function createDeepSeekClient(env: any) {
   });
 }
 
+export function createGrsaiClient(env: any) {
+  if (!env.GRSAI_API_KEY) {
+    throw new Error("GRSAI_API_KEY 未配置");
+  }
+
+  return new OpenAI({
+    baseURL: env.GRSAI_BASE_URL || "https://api.grsai.com/v1",
+    apiKey: env.GRSAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
+}
+
 // --- Maoyan Utils (Crypto Polyfill for Workers) ---
 const maoyanUtils = {
   parseQueryString: (qs: string) =>

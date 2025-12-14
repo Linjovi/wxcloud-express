@@ -1,20 +1,4 @@
-import { GoogleGenAI, Type, Schema } from "@google/genai";
-import { safeParseJSON, getComplimentStylePrompt } from "../utils";
-
-const editSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    base64Image: {
-      type: Type.STRING,
-      description: " The edited image encoded in Base64 (without data prefix). If unable to edit, return null.",
-    },
-    error: {
-      type: Type.STRING,
-      description: "Error message if editing failed.",
-    },
-  },
-  required: ["base64Image"],
-};
+import { createGrsaiClient, safeParseJSON, getComplimentStylePrompt } from "../utils";
 
 export async function onRequestPost(context: any) {
   const req = context.request;
@@ -43,13 +27,8 @@ export async function onRequestPost(context: any) {
       );
     }
 
-    const apiKey = context.env.GOOGLE_API_KEY;
-    if (!apiKey) {
-      throw new Error("GOOGLE_API_KEY is not set");
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-    // User requested "Gemini 2.5 Flash Image"
+    const openai = createGrsaiClient(context.env);
+    // Using the same model ID as before, assuming Grsai supports it or maps it.
     const modelId = "gemini-3-pro-image-preview";
 
     const systemInstruction = `
@@ -63,51 +42,39 @@ Guidelines:
 Output: You must return a JSON object containing the 'base64Image' of the edited result.
     `;
 
-    const response = await ai.models.generateContent({
+    const completion = await openai.chat.completions.create({
       model: modelId,
-      contents: [
+      messages: [
+        { role: "system", content: systemInstruction },
         {
           role: "user",
-          parts: [
-            { text: `Instruction: ${finalPrompt}` },
+          content: [
+            { type: "text", text: `Instruction: ${finalPrompt}` },
             {
-              inlineData: {
-                mimeType: mimeType || "image/jpeg",
-                data: image,
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType || "image/jpeg"};base64,${image}`,
               },
             },
           ],
         },
       ],
-      config: {
-        systemInstruction: systemInstruction,
-        responseMimeType: "application/json",
-        responseSchema: editSchema,
-        imageConfig: {
-          imageSize: outputSize || "2K"
-        }
-      },
+      response_format: { type: "json_object" },
     });
-    let result: any = {};
 
-    if (response?.candidates?.[0]?.content?.parts) {
-      for (const part of response?.candidates?.[0]?.content?.parts) {
-        if (part.inlineData && part.inlineData.data) {
-          result.base64Image = part.inlineData.data;
-        } else if (part.text) {
-          try {
-            const parsed = safeParseJSON(part.text);
-            if (parsed && parsed.base64Image) {
-              result = parsed;
-            }
-          } catch (e) {
-            // Ignore parse error
-          }
-        }
+    let result: any = {};
+    const content = completion.choices[0].message.content;
+
+    if (content) {
+      try {
+        result = safeParseJSON(content);
+      } catch (e) {
+        // Ignore parse error
+        console.error("JSON parse error:", e);
       }
     }
 
-    if (!result.base64Image) {
+    if (!result || !result.base64Image) {
       console.error("Model did not return image bytes.");
       throw new Error("修图失败，喵喵尽力了但没法直接生成图片数据喵~");
     }
