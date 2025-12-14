@@ -7,6 +7,7 @@ import TarotApp from "./apps/tarot/index";
 import ComplimentApp from "./apps/compliment/index";
 import { JudgeApp } from "./apps/judge/JudgeApp";
 import { SEO } from "./common/components/SEO";
+import { CatPawNavigator } from "./common/components/CatPawNavigator";
 
 // 路由深度映射，用于判断前进/后退
 const routeDepth: Record<string, number> = {
@@ -124,6 +125,7 @@ const App: React.FC = () => {
         keywords={seoDetails.keywords}
       />
       <div className="mx-auto min-h-screen bg-[#f9fafb] shadow-2xl relative overflow-hidden">
+        {location.pathname !== '/' && <CatPawNavigator />}
         <main className="w-full page-transition-container">
           {/* 旧页面 - 退出动画 */}
           {isTransitioning && (
