@@ -15,6 +15,8 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
   const [image, setImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
   const [result, setResult] = useState<ComplimentResponse | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
@@ -114,18 +116,29 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
     const outputSize = content.length > 800000 ? "2K" : "1K";
 
     try {
-      const data = await getCompliment(
+      await getCompliment(
         content,
         fullPrompt,
         mimeType,
         outputSize,
-        style
+        style,
+        (progressData) => {
+          if (progressData.progress) {
+            setProgress(progressData.progress);
+          }
+          if (progressData.status === "running") {
+            setStatusMessage("正在绘制喵...");
+          }
+        },
+        (finalResult) => {
+          setResult(finalResult);
+          setShowOriginal(false); // Show result by default
+          setLoading(false);
+          setProgress(0);
+        }
       );
-      setResult(data);
-      setShowOriginal(false); // Show result by default
     } catch (error) {
       alert("夸夸喵好像睡着了，请稍后再试喵~");
-    } finally {
       setLoading(false);
     }
   };
@@ -204,7 +217,17 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
             {loading && (
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-20">
                 <ComplimentCatAvatar className="w-20 h-20 mb-4 animate-bounce" />
-                <p className="text-yellow-500 font-bold animate-pulse">本喵正在施法...</p>
+                <p className="text-yellow-500 font-bold animate-pulse">
+                  {statusMessage || "本喵正在施法..."} {progress > 0 && `${progress}%`}
+                </p>
+                {progress > 0 && (
+                  <div className="w-48 h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                    <div 
+                      className="h-full bg-yellow-400 transition-all duration-300 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
