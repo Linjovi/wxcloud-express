@@ -1,4 +1,9 @@
-import { HotSearchItem, DouyinHotSearchItem, MaoyanHotItem, MaoyanWebHeatItem } from "./types";
+import {
+  HotSearchItem,
+  DouyinHotSearchItem,
+  MaoyanHotItem,
+  MaoyanWebHeatItem,
+} from "./types";
 import OpenAI from "openai";
 
 // --- Cache Implementation ---
@@ -13,14 +18,17 @@ export interface ComplimentStyle {
 }
 
 const DEFAULT_STYLES: Record<string, string> = {
-  "清除路人": "专业后期修图，智能移除画面背景中的路人、杂物和干扰元素，智能填充背景，保持画面自然完整，构图干净整洁。",
-  "更换场景": "保持人物主体光影和透视关系不变，将背景环境智能替换为：",
-  "一键美化": "大师级人像精修，自然磨皮美白，亮眼提神，五官立体化，肤色均匀通透，调整光影质感，增强画面清晰度，杂志封面级修图。",
-  "动漫风格": "二次元动漫风格，日本动画电影质感，新海诚画风，唯美光影，细腻笔触，梦幻色彩，2D插画效果。",
-  "更换天气": "调整环境天气效果，模拟自然真实的气象氛围，将天气更改为："
+  清除路人:
+    "专业后期修图，智能移除画面背景中的路人、杂物和干扰元素，智能填充背景，保持画面自然完整，构图干净整洁。",
+  更换场景: "保持人物主体光影和透视关系不变，将背景环境智能替换为：",
+  一键美化:
+    "大师级人像精修，自然磨皮美白，亮眼提神，五官立体化，肤色均匀通透，调整光影质感，增强画面清晰度，杂志封面级修图。",
+  动漫风格:
+    "二次元动漫风格，日本动画电影质感，新海诚画风，唯美光影，细腻笔触，梦幻色彩，2D插画效果。",
+  更换天气: "调整环境天气效果，模拟自然真实的气象氛围，将天气更改为：",
 };
 
-const CACHE_DURATION = 60 * 60 * 1000; // 60 minutes in milliseconds
+const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
 const CACHE: {
   weibo: CacheEntry<HotSearchItem[]> | null;
@@ -39,14 +47,18 @@ const CACHE: {
 // ...
 
 export function setComplimentStylesCache(styles: ComplimentStyle[]) {
+  console.log("Setting compliment styles cache:", styles);
   CACHE.complimentStyles = {
     data: styles,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
 }
 
 export function getComplimentStylesCache() {
-  if (CACHE.complimentStyles && Date.now() - CACHE.complimentStyles.timestamp < CACHE_DURATION) {
+  if (
+    CACHE.complimentStyles &&
+    Date.now() - CACHE.complimentStyles.timestamp < CACHE_DURATION
+  ) {
     return CACHE.complimentStyles.data;
   }
   return null;
@@ -60,7 +72,12 @@ export function getComplimentStylePrompt(title: string): string | null {
 
   // Check if cache exists and not expired (though logic for reading expired might be acceptable if strict consistency isn't needed)
   if (CACHE.complimentStyles) {
-    const style = CACHE.complimentStyles.data.find(s => s.title === title || `🔥 ${s.title}` === title || s.title === title.replace(/^🔥\s*/, ''));
+    const style = CACHE.complimentStyles.data.find(
+      (s) =>
+        s.title === title ||
+        `🔥 ${s.title}` === title ||
+        s.title === title.replace(/^🔥\s*/, "")
+    );
     return style ? style.prompt : null;
   }
   return null;
@@ -85,18 +102,18 @@ export function safeParseJSON(jsonString: string): any {
   }
 
   // 3. Extract JSON object/array if embedded in other text
-  const firstBrace = content.indexOf('{');
-  const firstBracket = content.indexOf('[');
-  
+  const firstBrace = content.indexOf("{");
+  const firstBracket = content.indexOf("[");
+
   let start = -1;
   let end = -1;
 
   if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
     start = firstBrace;
-    end = content.lastIndexOf('}') + 1;
+    end = content.lastIndexOf("}") + 1;
   } else if (firstBracket !== -1) {
     start = firstBracket;
-    end = content.lastIndexOf(']') + 1;
+    end = content.lastIndexOf("]") + 1;
   }
 
   if (start !== -1 && end !== -1) {
@@ -110,9 +127,9 @@ export function safeParseJSON(jsonString: string): any {
 
   // 4. Basic cleanup for common issues (trailing commas, etc - risky but helpful for simple cases)
   try {
-     // Remove trailing commas before } or ]
-     const cleaned = content.replace(/,\s*([\]}])/g, '$1');
-     return JSON.parse(cleaned);
+    // Remove trailing commas before } or ]
+    const cleaned = content.replace(/,\s*([\]}])/g, "$1");
+    return JSON.parse(cleaned);
   } catch (e) {
     console.error("JSON Repair failed:", e);
     return null;
@@ -133,72 +150,91 @@ export function createDeepSeekClient(env: any) {
 
 // --- Maoyan Utils (Crypto Polyfill for Workers) ---
 const maoyanUtils = {
-  parseQueryString: (qs: string) => Object.fromEntries((new URLSearchParams(qs) as any).entries()),
-  
+  parseQueryString: (qs: string) =>
+    Object.fromEntries((new URLSearchParams(qs) as any).entries()),
+
   // Cloudflare Workers/Browser MD5 implementation
   md5: async (message: string) => {
     const msgUint8 = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('MD5', msgUint8);
+    const hashBuffer = await crypto.subtle.digest("MD5", msgUint8);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
     return hashHex;
   },
 
   base64: (str: string) => btoa(unescape(encodeURIComponent(str))),
-}
+};
 
 const getMaoyanSig = async (qs: string) => {
-  const sortedStr = Object.entries({ path: '/dashboard-ajax', ...maoyanUtils.parseQueryString(qs) })
+  const sortedStr = Object.entries({
+    path: "/dashboard-ajax",
+    ...maoyanUtils.parseQueryString(qs),
+  })
     .sort((a, b) => a[0].toLowerCase().localeCompare(b[0].toLowerCase()))
-    .map(([_, v]) => (typeof v === 'object' ? JSON.stringify(v) : v))
-    .join('_')
+    .map(([_, v]) => (typeof v === "object" ? JSON.stringify(v) : v))
+    .join("_");
 
-  const ts = Date.now()
-  const ms1 = await maoyanUtils.md5(`581409236#${sortedStr}$${ts}`)
+  const ts = Date.now();
+  const ms1 = await maoyanUtils.md5(`581409236#${sortedStr}$${ts}`);
 
   return JSON.stringify({
-    m1: '0.0.3',
+    m1: "0.0.3",
     ms1,
     ts,
-  })
-}
+  });
+};
 
 const getMaoyanParams = async () => {
-  const fixedParams = { method: 'GET', key: 'A013F70DB97834C0A5492378BD76C53A' }
+  const fixedParams = {
+    method: "GET",
+    key: "A013F70DB97834C0A5492378BD76C53A",
+  };
 
   const signData: Record<string, any> = {
     timeStamp: Date.now(),
-    'User-Agent': maoyanUtils.base64('Mozilla/5.0 Chrome/140.0.0.0 Safari/537.36'),
+    "User-Agent": maoyanUtils.base64(
+      "Mozilla/5.0 Chrome/140.0.0.0 Safari/537.36"
+    ),
     index: Math.floor(Math.random() * 1000 + 1),
     channelId: 40009,
     sVersion: 2,
-  }
+  };
 
-  const signKey = await maoyanUtils.md5(new URLSearchParams({ ...fixedParams, ...signData }).toString().replace(/\s+/g, ' '))
+  const signKey = await maoyanUtils.md5(
+    new URLSearchParams({ ...fixedParams, ...signData })
+      .toString()
+      .replace(/\s+/g, " ")
+  );
 
-  return new URLSearchParams({ ...signData, signKey })
-}
+  return new URLSearchParams({ ...signData, signKey });
+};
 
 export async function getMaoyanWebHeat(): Promise<MaoyanWebHeatItem[]> {
   // Check Cache
-  if (CACHE.maoyanWeb && Date.now() - CACHE.maoyanWeb.timestamp < CACHE_DURATION) {
+  if (
+    CACHE.maoyanWeb &&
+    Date.now() - CACHE.maoyanWeb.timestamp < CACHE_DURATION
+  ) {
     return CACHE.maoyanWeb.data;
   }
 
   try {
-    const params = await getMaoyanParams()
-    const sig = await getMaoyanSig(params.toString())
-    const url = `https://piaofang.maoyan.com/dashboard-ajax?${params}`
-    
+    const params = await getMaoyanParams();
+    const sig = await getMaoyanSig(params.toString());
+    const url = `https://piaofang.maoyan.com/dashboard-ajax?${params}`;
+
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'mygsig': sig
-      }
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        mygsig: sig,
+      },
     });
-    
+
     const data: any = await response.json();
-    
+
     if (!data?.webList?.data?.list) {
       console.error("Maoyan web list structure changed or empty", data);
       return [];
@@ -211,17 +247,16 @@ export async function getMaoyanWebHeat(): Promise<MaoyanWebHeatItem[]> {
       platform: item.seriesInfo.platformDesc,
       releaseInfo: item.seriesInfo.releaseInfo,
       link: `https://piaofang.maoyan.com/movie/${item.seriesInfo.seriesId}`, // Or appropriate link
-      iconType: idx < 3 ? 'hot' : null
+      iconType: idx < 3 ? "hot" : null,
     }));
 
     // Update Cache
     CACHE.maoyanWeb = {
       data: list,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     return list;
-
   } catch (error) {
     console.error("Maoyan Web Heat fetch error:", error);
     // If cache exists (even if expired), return it as fallback
@@ -230,45 +265,52 @@ export async function getMaoyanWebHeat(): Promise<MaoyanWebHeatItem[]> {
   }
 }
 
-
 // --- Maoyan Box Office (Global History) ---
-function formatBoxOffice(boxOffice: number | string, decimals: number = 2): string {
-  if (typeof decimals !== 'number' || decimals < 0) {
-    throw new Error('decimals must be a non-negative number')
+function formatBoxOffice(
+  boxOffice: number | string,
+  decimals: number = 2
+): string {
+  if (typeof decimals !== "number" || decimals < 0) {
+    throw new Error("decimals must be a non-negative number");
   }
 
-  const amount = Number(boxOffice)
-  if (Number.isNaN(amount)) throw new Error('Invalid input: boxOffice must be a valid number')
+  const amount = Number(boxOffice);
+  if (Number.isNaN(amount))
+    throw new Error("Invalid input: boxOffice must be a valid number");
 
-  const UNIT_WAN = 10 ** 4
-  const UNIT_YI = 10 ** 8
-  const UNIT_WAN_YI = 10 ** 12
+  const UNIT_WAN = 10 ** 4;
+  const UNIT_YI = 10 ** 8;
+  const UNIT_WAN_YI = 10 ** 12;
 
-  const formatNumber = (num: number): string => num.toFixed(decimals).replace(/\.?0+$/, '')
+  const formatNumber = (num: number): string =>
+    num.toFixed(decimals).replace(/\.?0+$/, "");
 
   if (amount < UNIT_WAN) {
-    return `${formatNumber(amount)}元`
+    return `${formatNumber(amount)}元`;
   } else if (amount < UNIT_YI) {
-    return `${formatNumber(amount / UNIT_WAN)}万元`
+    return `${formatNumber(amount / UNIT_WAN)}万元`;
   } else if (amount < UNIT_WAN_YI) {
-    return `${formatNumber(amount / UNIT_YI)}亿元`
+    return `${formatNumber(amount / UNIT_YI)}亿元`;
   } else {
-    return `${formatNumber(amount / UNIT_WAN_YI)}万亿元`
+    return `${formatNumber(amount / UNIT_WAN_YI)}万亿元`;
   }
 }
 
 export async function getMaoyanHistory(): Promise<MaoyanHotItem[]> {
   try {
     const headers = {
-      referer: 'https://piaofang.maoyan.com/',
-      'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+      referer: "https://piaofang.maoyan.com/",
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
     };
 
-    const response = await fetch('https://piaofang.maoyan.com/i/globalBox/historyRank', { headers });
+    const response = await fetch(
+      "https://piaofang.maoyan.com/i/globalBox/historyRank",
+      { headers }
+    );
     const html = await response.text();
-    
-    const json = /var props = (\{.*?\});/.exec(html)?.[1] || '{}';
+
+    const json = /var props = (\{.*?\});/.exec(html)?.[1] || "{}";
     const data = JSON.parse(json)?.data || {};
     const list = (data?.detail?.list || []) as any[];
 
@@ -280,9 +322,8 @@ export async function getMaoyanHistory(): Promise<MaoyanHotItem[]> {
         title: e.movieName,
         releaseTime: e.releaseTime,
         boxOffice: formatBoxOffice(e.rawValue),
-        link: `https://piaofang.maoyan.com/movie/${e.movieId}`
+        link: `https://piaofang.maoyan.com/movie/${e.movieId}`,
       }));
-
   } catch (error) {
     console.error("Maoyan fetch error:", error);
     return [];
@@ -315,8 +356,8 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
 
     // Find the list section to narrow down scope
     const listStart = html.indexOf('<section class="list">');
-    const listEnd = html.indexOf('</section>', listStart);
-    
+    const listEnd = html.indexOf("</section>", listStart);
+
     if (listStart === -1 || listEnd === -1) {
       // Fallback or just return empty if structure completely changed
       console.error("Could not find list section in Weibo HTML");
@@ -324,10 +365,10 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
     }
 
     const listHtml = html.substring(listStart, listEnd);
-    
+
     // Split by <li>
-    const items = listHtml.split('<li>');
-    
+    const items = listHtml.split("<li>");
+
     // Skip the first split part which is before the first <li>
     items.shift();
 
@@ -359,14 +400,14 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
       const linkMatch = itemHtml.match(/<a href="([^"]+)"/);
       if (linkMatch) {
         let href = linkMatch[1];
-        if (href.startsWith('/')) {
+        if (href.startsWith("/")) {
           href = "https://s.weibo.com" + href;
         } else if (href === "#") {
-           // Pinned item often has href="#"
-           // We can try to construct a search link if needed, or leave as is.
-           // Ideally, we might want to skip link if it's useless, 
-           // but for now let's keep it or set to null if strictly '#'
-           // link = null; 
+          // Pinned item often has href="#"
+          // We can try to construct a search link if needed, or leave as is.
+          // Ideally, we might want to skip link if it's useless,
+          // but for now let's keep it or set to null if strictly '#'
+          // link = null;
         }
         link = href;
       }
@@ -387,16 +428,16 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
       }
 
       // 4. Extract Icon
-      if (itemHtml.includes('icon_new')) iconType = "new";
-      else if (itemHtml.includes('icon_hot')) iconType = "hot";
-      else if (itemHtml.includes('icon_boil')) iconType = "boil";
-      else if (itemHtml.includes('icon_fei')) iconType = "fei";
-      else if (itemHtml.includes('icon_recommend')) iconType = "recommend";
-      
-      if (itemHtml.includes('icon_pinned')) {
+      if (itemHtml.includes("icon_new")) iconType = "new";
+      else if (itemHtml.includes("icon_hot")) iconType = "hot";
+      else if (itemHtml.includes("icon_boil")) iconType = "boil";
+      else if (itemHtml.includes("icon_fei")) iconType = "fei";
+      else if (itemHtml.includes("icon_recommend")) iconType = "recommend";
+
+      if (itemHtml.includes("icon_pinned")) {
         iconType = "pinned";
         // Ensure rank is null for pinned
-        rank = null; 
+        rank = null;
       }
 
       if (title) {
@@ -407,7 +448,7 @@ export async function getWeiboHotSearch(): Promise<HotSearchItem[]> {
     // Update Cache
     CACHE.weibo = {
       data: list,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     return list;
@@ -450,9 +491,9 @@ export async function getDouyinHotSearch(): Promise<DouyinHotSearchItem[]> {
       // Update Cache
       CACHE.douyin = {
         data: list,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       return list;
     }
     return [];
@@ -466,7 +507,10 @@ export async function getDouyinHotSearch(): Promise<DouyinHotSearchItem[]> {
 // --- Xiaohongshu Hot Search ---
 export async function getXiaohongshuHotSearch(): Promise<HotSearchItem[]> {
   // Check Cache
-  if (CACHE.xiaohongshu && Date.now() - CACHE.xiaohongshu.timestamp < CACHE_DURATION) {
+  if (
+    CACHE.xiaohongshu &&
+    Date.now() - CACHE.xiaohongshu.timestamp < CACHE_DURATION
+  ) {
     return CACHE.xiaohongshu.data;
   }
 
@@ -504,9 +548,9 @@ export async function getXiaohongshuHotSearch(): Promise<HotSearchItem[]> {
       // Update Cache
       CACHE.xiaohongshu = {
         data: list,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       return list;
     }
     return [];
