@@ -1,11 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  ComplimentCatAvatar,
-  SparklesIcon,
-} from "../../common/components/Icons";
+import { ComplimentCatAvatar } from "../../common/components/Icons";
 import { getCompliment, getComplimentStyles } from "./api";
 import { ComplimentResponse } from "./types";
-import { Loader2, Upload, Camera, Share2, ChevronDown, Check } from "lucide-react";
+import {
+  Loader2,
+  Camera,
+  Sparkles,
+  X,
+  Image as ImageIcon,
+  Download,
+  Flame,
+  Settings2,
+  Wand2,
+} from "lucide-react";
 
 interface ComplimentAppProps {
   onBack: () => void;
@@ -22,97 +29,88 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [hotStyles, setHotStyles] = useState<Array<{ title: string }>>([]);
   const [loadingHotStyles, setLoadingHotStyles] = useState(false);
-  const [showHotStyles, setShowHotStyles] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"hot" | "function">("hot");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+  // Fetch hot styles on mount
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    fetchHotStyles();
   }, []);
 
   const fetchHotStyles = async () => {
-    if (hotStyles.length > 0) {
-      setShowHotStyles(true);
-      return;
-    }
+    if (hotStyles.length > 0) return;
 
     setLoadingHotStyles(true);
     try {
       const styles = await getComplimentStyles();
       setHotStyles(styles);
-      setShowHotStyles(true);
     } catch (e) {
       console.error("Failed to fetch hot styles", e);
-      alert("获取灵感失败了喵~");
     } finally {
       setLoadingHotStyles(false);
     }
   };
 
-  const toggleHotStyles = () => {
-    if (showHotStyles) {
-      setShowHotStyles(false);
-    } else {
-      fetchHotStyles();
-    }
+  const showError = (msg: string) => {
+    setErrorMsg(msg);
+    setTimeout(() => setErrorMsg(null), 3000);
   };
 
   const defaultPresets = [
-    { title: "清除路人" },
-    { title: "更换场景" },
     { title: "一键美化" },
+    { title: "清除路人" },
+    // { title: "更换场景" },
     { title: "动漫风格" },
-    { title: "更换天气" },
+    // { title: "更换天气" },
   ];
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const processFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
-      alert("请上传图片文件喵~");
+      showError("请上传图片文件喵~");
       return;
     }
+    // Limit file size to 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      showError("图片太大了喵，请上传10MB以内的图片~");
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setImage(reader.result as string);
       setResult(null); // Clear previous result
       setShowOriginal(false);
+      setErrorMsg(null);
     };
     reader.readAsDataURL(file);
   };
-  // ... (skip unchanged handleGenerate) ...
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) processFile(file);
+  };
+
   const handleGenerate = async () => {
-    // Determine if selectedPreset is a hot style title
     let style: string | undefined = undefined;
     let presetPrompt = null;
 
     if (selectedPreset) {
       style = selectedPreset;
-      presetPrompt = null; // Don't include the title in the prompt text
+      presetPrompt = null;
     }
 
-    // Combine preset and user input
     const fullPrompt = [presetPrompt, prompt].filter(Boolean).join("，");
 
     if (!image || (!fullPrompt.trim() && !style)) return;
 
     setLoading(true);
+    setErrorMsg(null);
+
     const content = image.split(",")[1];
     const mimeType = image.split(";")[0].split(":")[1];
-
-    // Simple heuristic: if base64 string > 800KB (approx 600KB file), use 2K, else 1K
     const outputSize = content.length > 800000 ? "2K" : "1K";
 
     try {
@@ -131,14 +129,18 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
           }
         },
         (finalResult) => {
-          setResult(finalResult);
-          setShowOriginal(false); // Show result by default
+          if (finalResult.error) {
+            showError(finalResult.error);
+          } else {
+            setResult(finalResult);
+            setShowOriginal(false);
+          }
           setLoading(false);
           setProgress(0);
         }
       );
     } catch (error) {
-      alert("夸夸喵好像睡着了，请稍后再试喵~");
+      showError("夸夸喵好像睡着了，请稍后再试喵~");
       setLoading(false);
     }
   };
@@ -148,219 +150,295 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
     setPrompt("");
     setResult(null);
     setShowOriginal(false);
-    setSelectedPreset(null); // Reset selected preset
+    setSelectedPreset(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // ... inside component ...
-  const handleDownload = () => {
-    if (!result?.base64Image) return;
-    const link = document.createElement("a");
-    link.href = `data:image/jpeg;base64,${result.base64Image}`;
-    link.download = `compliment-cat-${Date.now()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleClearImage = () => {
+    setImage(null);
+    setResult(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDownload = async () => {
+    if (!result) return;
+    try {
+      let href = "";
+      if (result.imageUrl) {
+        const response = await fetch(result.imageUrl);
+        const blob = await response.blob();
+        href = URL.createObjectURL(blob);
+      } else if (result.base64Image) {
+        href = `data:image/jpeg;base64,${result.base64Image}`;
+      }
+
+      if (href) {
+        const link = document.createElement("a");
+        link.href = href;
+        link.download = `compliment-cat-${Date.now()}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        if (result.imageUrl) URL.revokeObjectURL(href);
+      }
+    } catch (e) {
+      console.error("Download failed", e);
+      showError("保存失败，请长按图片保存喵~");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-yellow-50 flex flex-col items-center p-4 pt-8 animate-fade-in font-sans">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <ComplimentCatAvatar className="w-16 h-16 shadow-lg" />
-        <div>
-          <h1 className="text-2xl font-black text-yellow-600 tracking-wider">
-            夸夸喵
-          </h1>
-          <p className="text-xs text-yellow-500 font-bold opacity-80">
-            在本喵眼里，你永远是最完美的模样
-          </p>
+    <div className="fixed inset-0 bg-gray-50 flex flex-col font-sans overflow-hidden">
+      {/* Toast Error */}
+      {errorMsg && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-full shadow-xl z-50 animate-fade-in-up flex items-center gap-2">
+          <span className="text-sm font-bold">{errorMsg}</span>
         </div>
-      </div>
+      )}
 
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-yellow-100 min-h-[500px] flex flex-col items-start relative">
-        <div className="w-full flex-1 p-6 flex flex-col items-center relative">
+      {/* Top Image Area - Fixed Height */}
+      <div className="relative w-full h-[35vh] bg-gray-100 flex-shrink-0 flex items-center justify-center">
+        {result ? (
+          // Result View
+          <div className="relative w-full h-full flex items-center justify-center">
+            <img
+              src={
+                showOriginal
+                  ? image!
+                  : result.imageUrl ||
+                    `data:image/jpeg;base64,${result.base64Image}`
+              }
+              alt="Result"
+              className="w-full h-full object-contain block transition-opacity duration-200 p-4"
+            />
 
-          {/* Image Display Area */}
-          <div className="w-full relative rounded-2xl overflow-hidden shadow-md bg-gray-100 min-h-[200px]">
-            {result?.base64Image && !showOriginal ? (
-              <img src={`data:image/jpeg;base64,${result.base64Image}`} alt="Result" className="w-full h-auto object-contain" />
-            ) : image ? (
-              <img src={image} alt="Original" className="w-full h-auto object-contain" />
-            ) : (
-              <div
-                className="w-full h-64 flex flex-col items-center justify-center cursor-pointer text-gray-400 gap-2 hover:bg-gray-200 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Camera className="w-10 h-10 text-yellow-400" />
-                <span className="text-sm">点击上传照片</span>
+            {/* Comparison Button */}
+            <button
+              onMouseDown={() => setShowOriginal(true)}
+              onMouseUp={() => setShowOriginal(false)}
+              onMouseLeave={() => setShowOriginal(false)}
+              onTouchStart={() => setShowOriginal(true)}
+              onTouchEnd={() => setShowOriginal(false)}
+              className="absolute bottom-4 right-4 bg-black/60 text-white text-xs font-bold px-4 py-2 rounded-full backdrop-blur-md z-10 active:scale-95 transition-transform"
+            >
+              {showOriginal ? "松开看结果" : "按住看原图"}
+            </button>
+          </div>
+        ) : image ? (
+          // Uploaded Image View
+          <div className="relative w-full h-full flex items-center justify-center">
+            <img
+              src={image}
+              alt="Original"
+              className="w-full h-full object-contain block p-4"
+            />
+            <button
+              onClick={handleClearImage}
+              className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-20"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          // Empty State
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200/50 transition-colors w-full h-full text-gray-600"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-md border border-gray-100">
+              <Camera className="w-10 h-10 text-yellow-500" />
+            </div>
+            <h3 className="text-2xl font-black mb-2 text-gray-800">上传照片</h3>
+            <p className="text-gray-500 text-sm text-center max-w-xs">
+              让夸夸喵为你施展魔法
+            </p>
+          </div>
+        )}
+
+        {/* Loading Overlay */}
+        {loading && (
+          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+            <div className="relative">
+              <ComplimentCatAvatar className="w-24 h-24 mb-6 animate-bounce" />
+              <Sparkles className="absolute -top-2 -right-2 w-8 h-8 text-yellow-400 animate-spin-slow" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {statusMessage || "让本喵思考一下..."}
+            </h3>
+            <p className="text-gray-500 text-sm mb-6">请耐心等待一小会儿喵~</p>
+
+            {progress > 0 && (
+              <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+                <div
+                  className="h-full bg-yellow-400 transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
             )}
-
-            {/* Comparison Toggle Button Overlay */}
-            {result && (
-              <div className="absolute top-2 right-2 z-10">
-                <button
-                  onMouseDown={() => setShowOriginal(true)}
-                  onMouseUp={() => setShowOriginal(false)}
-                  onMouseLeave={() => setShowOriginal(false)}
-                  onTouchStart={() => setShowOriginal(true)}
-                  onTouchEnd={() => setShowOriginal(false)}
-                  className="bg-black/50 hover:bg-black/70 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm transition-colors cursor-pointer select-none"
-                >
-                  {showOriginal ? "松开看结果" : "按住看原图"}
-                </button>
-              </div>
-            )}
-
-            {/* Loading Overlay */}
-            {loading && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-20">
-                <ComplimentCatAvatar className="w-20 h-20 mb-4 animate-bounce" />
-                <p className="text-yellow-500 font-bold animate-pulse">
-                  {statusMessage || "本喵正在施法..."} {progress > 0 && `${progress}%`}
-                </p>
-                {progress > 0 && (
-                  <div className="w-48 h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
-                    <div 
-                      className="h-full bg-yellow-400 transition-all duration-300 ease-out"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                )}
-              </div>
+            {progress > 0 && (
+              <span className="text-xs text-gray-400 mt-2">{progress}%</span>
             )}
           </div>
+        )}
+      </div>
 
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
 
-
-          {/* Controls Area */}
-          {image && !result && (
-            <div className="w-full mt-6 space-y-4 animate-fade-in-up">
-
-              {/* Quick Presets Dropdown */}
-              <div className="relative mb-2" ref={dropdownRef}>
+      {/* Controls Area - Scrollable */}
+      <div className="flex-1 bg-white rounded-t-3xl -mt-6 relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+        {/* Scrollable Form Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {image && !result ? (
+            <>
+              {/* Tabs */}
+              <div className="flex gap-4 mb-6">
                 <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-yellow-200 rounded-xl text-sm font-bold text-gray-700 hover:border-yellow-400 transition-colors"
+                  onClick={() => setActiveTab("hot")}
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "hot"
+                      ? "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400/20"
+                      : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                  }`}
                 >
-                  <span className="truncate">
-                    {selectedPreset
-                      ? (showHotStyles ? hotStyles : defaultPresets).find((p) => p.title === selectedPreset)?.title ||
-                        defaultPresets.find(p => p.title === selectedPreset)?.title || 
-                        hotStyles.find(p => p.title === selectedPreset)?.title ||
-                        selectedPreset
-                      : "✨ 选择修图风格"}
-                  </span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-yellow-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""
-                      }`}
+                  <Flame
+                    className={`w-4 h-4 ${
+                      activeTab === "hot" ? "text-red-500" : "text-gray-400"
+                    }`}
                   />
+                  热搜主题
                 </button>
+                <button
+                  onClick={() => setActiveTab("function")}
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "function"
+                      ? "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400/20"
+                      : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                  }`}
+                >
+                  <Settings2
+                    className={`w-4 h-4 ${
+                      activeTab === "function"
+                        ? "text-blue-500"
+                        : "text-gray-400"
+                    }`}
+                  />
+                  常用功能
+                </button>
+              </div>
 
-                {isDropdownOpen && (
-                  <div className="absolute top-full left-0 w-full mt-2 bg-white border-2 border-yellow-100 rounded-xl shadow-xl z-20 overflow-hidden max-h-60 flex flex-col animate-fade-in-up">
-                    <div className="overflow-y-auto flex-1 p-2 space-y-1 scrollbar-thin scrollbar-thumb-yellow-200 scrollbar-track-transparent">
-                      {(showHotStyles ? hotStyles : defaultPresets).map((preset) => (
+              {/* Chips Grid */}
+              <div className="mb-6">
+                {activeTab === "hot" && loadingHotStyles ? (
+                  <div className="h-24 flex items-center justify-center gap-2 text-gray-400">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="text-sm">寻找灵感中...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {(activeTab === "hot" ? hotStyles : defaultPresets).map(
+                      (preset) => (
                         <button
                           key={preset.title}
-                          onClick={() => {
-                            setSelectedPreset(preset.title);
-                            setIsDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm font-bold transition-colors flex items-center justify-between ${selectedPreset === preset.title
-                            ? "bg-yellow-50 text-yellow-600"
-                            : "text-gray-600 hover:bg-gray-50"
-                            }`}
+                          onClick={() =>
+                            setSelectedPreset(
+                              selectedPreset === preset.title
+                                ? null
+                                : preset.title
+                            )
+                          }
+                          className={`px-4 py-2 rounded-full text-sm font-bold border transition-all ${
+                            selectedPreset === preset.title
+                              ? "bg-yellow-500 text-white border-yellow-500 shadow-md transform scale-105"
+                              : "bg-white text-gray-600 border-gray-200 hover:border-yellow-300 hover:bg-yellow-50"
+                          }`}
                         >
-                          <span className="text-left">{preset.title}</span>
-                          {selectedPreset === preset.title && <Check className="w-4 h-4 flex-shrink-0 ml-2" />}
+                          {preset.title}
                         </button>
-                      ))}
-                      {showHotStyles && hotStyles.length === 0 && !loadingHotStyles && (
-                        <div className="p-4 text-center text-gray-400 text-xs">
-                          暂无合适的热搜灵感喵~
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-2 border-t border-gray-100 bg-gray-50">
-                      <button
-                        onClick={toggleHotStyles}
-                        disabled={loadingHotStyles}
-                        className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-red-500 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
-                      >
-                        {loadingHotStyles ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          "🔥"
-                        )}
-                        {showHotStyles ? "返回常用预设" : "找点热搜灵感"}
-                      </button>
-                    </div>
+                      )
+                    )}
+                    {activeTab === "hot" && hotStyles.length === 0 && (
+                      <div className="w-full text-center py-4 text-gray-400 text-sm">
+                        暂无推荐，试试常用功能吧~
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
+              {/* Prompt Input */}
               <div className="relative">
+                <label className="text-xs font-bold text-gray-400 mb-2 block uppercase tracking-wider">
+                  补充描述 (可选)
+                </label>
                 <textarea
                   ref={textareaRef}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="告诉本喵你想怎么修？选择上方快捷指令，或自己输入..."
-                  className="w-full p-4 rounded-xl bg-yellow-50 border-2 border-yellow-200 focus:border-yellow-400 outline-none resize-none text-sm h-32 text-gray-700 placeholder:text-gray-400"
+                  placeholder="例如：让天空更蓝一点..."
+                  className="w-full p-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 focus:bg-white outline-none resize-none text-sm h-24 text-gray-700 transition-all placeholder:text-gray-400"
                 />
-                <div className="absolute bottom-3 right-3 text-xs text-yellow-400">
+                <div className="absolute bottom-3 right-3 text-xs text-gray-400 font-medium">
                   {prompt.length}/200
                 </div>
               </div>
-
-              <button
-                onClick={handleGenerate}
-                disabled={(!prompt.trim() && !selectedPreset) || loading}
-                className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-full shadow-lg shadow-yellow-200 active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <SparklesIcon className="w-5 h-5" /> 开始施法
-              </button>
-            </div>
-          )}
-
-          {/* Reset / Action Buttons */}
-          {result && (
-            <div className="w-full mt-6 flex gap-3 flex-col">
-              <div className="flex gap-3">
-                <button onClick={handleDownload} className="flex-1 py-3 bg-yellow-400 text-white font-bold rounded-full hover:bg-yellow-500 shadow-lg shadow-yellow-200 active:scale-95 transition-all flex items-center justify-center gap-2">
-                  <Share2 className="w-4 h-4" /> 保存美照
+            </>
+          ) : result ? (
+            <div className="flex flex-col items-center justify-center h-full pb-10 animate-fade-in-up">
+              <h3 className="text-xl font-black text-gray-800 mb-6">
+                🎉 美照生成完毕！
+              </h3>
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <button
+                  onClick={handleDownload}
+                  className="py-4 bg-yellow-400 text-white font-bold rounded-2xl hover:bg-yellow-500 shadow-lg shadow-yellow-200 active:scale-95 transition-all flex flex-col items-center justify-center gap-1"
+                >
+                  <Download className="w-6 h-6 mb-1" />
+                  <span>保存美照</span>
                 </button>
-                <button onClick={handleReset} className="flex-1 py-3 border-2 border-yellow-400 text-yellow-600 font-bold rounded-full hover:bg-yellow-50 transition-colors">
-                  再修一张
+                <button
+                  onClick={handleReset}
+                  className="py-4 bg-gray-100 text-gray-700 font-bold rounded-2xl hover:bg-gray-200 transition-colors flex flex-col items-center justify-center gap-1"
+                >
+                  <ImageIcon className="w-6 h-6 mb-1" />
+                  <span>再修一张</span>
                 </button>
               </div>
+              <p className="text-center text-xs text-gray-400 mt-6">
+                提示：如果保存失败，请长按图片手动保存
+              </p>
+            </div>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 text-sm pb-10">
+              <Sparkles className="w-8 h-8 mb-2 text-gray-300" />
+              <p>上传照片后即可开始修图</p>
             </div>
           )}
-
-          {result?.error && (
-            <div className="mt-4 p-3 bg-red-50 text-red-500 text-sm rounded-lg text-center font-bold">
-              {result.error}
-            </div>
-          )}
-
         </div>
-      </div>
 
-      <button
-        onClick={onBack}
-        className="mt-8 text-yellow-600/50 text-sm font-bold hover:text-yellow-600 transition-colors"
-      >
-        ← 返回事务所
-      </button>
+        {/* Fixed Generate Button */}
+        {image && !result && (
+          <div className="p-4 bg-white border-t border-gray-100 z-20">
+            <button
+              onClick={handleGenerate}
+              disabled={(!prompt.trim() && !selectedPreset) || loading}
+              className="w-full bg-black text-white font-bold py-4 rounded-full shadow-lg hover:shadow-xl disabled:bg-gray-300 disabled:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2 text-lg"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Wand2 className="w-5 h-5" />
+              )}
+              {!prompt.trim() && !selectedPreset ? "请选择效果" : "开始生成"}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

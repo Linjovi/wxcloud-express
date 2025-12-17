@@ -1,4 +1,10 @@
-import { safeParseJSON, getComplimentStylePrompt } from "../utils";
+import {
+  safeParseJSON,
+  getComplimentStylePrompt,
+  updateComplimentStylesCache,
+  createDeepSeekClient,
+  generateComplimentPrompt,
+} from "../utils";
 
 export async function onRequestPost(context: any) {
   const req = context.request;
@@ -9,12 +15,31 @@ export async function onRequestPost(context: any) {
 
     let finalPrompt = prompt;
     if (style) {
-      const cachedPrompt = getComplimentStylePrompt(style);
+      let cachedPrompt = getComplimentStylePrompt(style);
+
+      // If no cached prompt found for the style, try to generate one on the fly
+      if (!cachedPrompt) {
+        try {
+          console.log(`No cached prompt for style "${style}", generating...`);
+          const client = createDeepSeekClient(context.env);
+          const generated = await generateComplimentPrompt(client, style, 1.1);
+
+          if (typeof generated === "string" && generated) {
+            console.log(`Generated prompt for "${style}":`, generated);
+            cachedPrompt = generated;
+            // Update cache for future use
+            updateComplimentStylesCache({ title: style, prompt: generated });
+          }
+        } catch (err) {
+          console.error(`Failed to generate prompt for style "${style}":`, err);
+        }
+      }
+
       if (cachedPrompt) {
         finalPrompt = `${cachedPrompt}，${prompt || ""}`;
       } else {
         // Fallback: use style title itself
-        finalPrompt = `请参考“${style}”的风格，对这张照片进行风格化调整。${
+        finalPrompt = `请以“${style}”为主题，对这张照片进行处理。${
           prompt || ""
         }`;
       }
@@ -40,10 +65,9 @@ export async function onRequestPost(context: any) {
 
     const systemInstruction = `
 (Masterpiece, Best Quality, Photorealistic, 8K, Ultra Detailed), Professional Photography, Cinematic Lighting.
-- Ensure the result is photorealistic, high-resolution, and visually stunning.
-- Maintain the original subject's identity, facial details, and lighting conditions.
-- Execute the editing instruction precisely.
-- Apply professional color grading and subtle enhancements.
+- CRITICAL: Strictly preserve the subject's facial identity.
+- INSTRUCTION: If the scene/season/time changes, ADAPT clothing/hair/pose naturally. Otherwise, MAINTAIN original details.
+- STYLE: Photorealistic, high-end commercial retouching.
     `;
 
     const payload = {

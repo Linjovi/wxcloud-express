@@ -57,4 +57,12 @@ export interface TarotRequestData {
 export interface Env {
   DEEPSEEK_API_KEY: string;
   GOOGLE_API_KEY: string;
+  GRSAI_API_KEY: string;
+  GRSAI_BASE_URL?: string;
+}
+
+export interface ComplimentStyle {
+  title: string;
+  prompt: string;
+  tags?: string[];
 }

@@ -62,40 +62,10 @@ export const getCompliment = async (
                 onProgress(data);
               }
             } else if (data.status === "succeeded" && data.results && data.results.length > 0) {
-              // Handle completion
-              // The API returns image URL, we might need to fetch it to convert to base64 or just use URL if <img src> supports it.
-              // Current app expects base64Image in ComplimentResponse.
-              // However, the new API returns a URL.
-              // Let's try to fetch the URL and convert to base64 to maintain compatibility with the UI which expects base64Image
-              
               const imageUrl = data.results[0].url;
               if (imageUrl) {
-                 // Fetch the image from the URL to convert to base64
-                 // Note: this might run into CORS if the image server doesn't allow it.
-                 // Ideally the backend should proxy this or UI should support URL.
-                 // For now, let's try to pass the URL as base64Image (UI uses it in src="data:image/jpeg;base64,...")
-                 // WAIT, UI code does: <img src={`data:image/jpeg;base64,${result.base64Image}`}
-                 // We need to fetch it.
-                 
-                 // BUT, for speed, let's assume we can change UI to support URL or we fetch it here.
-                 // To minimize UI changes, let's fetch here.
-                 try {
-                     const imgRes = await fetch(imageUrl);
-                     const blob = await imgRes.blob();
-                     const reader = new FileReader();
-                     reader.onloadend = () => {
-                         const base64data = (reader.result as string).split(',')[1];
-                         if (onComplete) {
-                             onComplete({ base64Image: base64data });
-                         }
-                     };
-                     reader.readAsDataURL(blob);
-                 } catch (e) {
-                     console.error("Failed to fetch result image", e);
-                     if (onComplete) {
-                         // Fallback?
-                         onComplete({ error: "Failed to download result image" } as any);
-                     }
+                 if (onComplete) {
+                     onComplete({ imageUrl });
                  }
               }
             } else if (data.status === "failed") {
