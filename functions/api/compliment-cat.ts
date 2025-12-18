@@ -39,9 +39,8 @@ export async function onRequestPost(context: any) {
         finalPrompt = `${cachedPrompt}，${prompt || ""}`;
       } else {
         // Fallback: use style title itself
-        finalPrompt = `请以“${style}”为主题，对这张照片进行处理。${
-          prompt || ""
-        }`;
+        finalPrompt = `请以“${style}”为主题，对这张照片进行处理。${prompt || ""
+          }`;
       }
     }
 
@@ -63,19 +62,16 @@ export async function onRequestPost(context: any) {
       throw new Error("GRSAI_API_KEY is not set");
     }
 
-    const systemInstruction = `
-(Masterpiece, Best Quality, Photorealistic, 8K, Ultra Detailed), Professional Photography, Cinematic Lighting.
-- CRITICAL: Strictly preserve the subject's facial identity.
-- INSTRUCTION: If the scene/season/time changes, ADAPT clothing/hair/pose naturally. Otherwise, MAINTAIN original details.
-- STYLE: Photorealistic, high-end commercial retouching.
-    `;
+    const systemInstruction = `【重要提示：保持人物面部特征、五官身份完全不变】
+${finalPrompt}`;
 
     const payload = {
       model: "nano-banana-pro",
-      prompt: `${systemInstruction}\n\nInstruction: ${finalPrompt}`,
+      prompt: systemInstruction,
       urls: [image], // Assuming API accepts base64 string in 'image' field
       aspectRatio: "auto",
       imageSize: "2K",
+      stream: stream,
     };
 
     const response = await fetch(url, {
@@ -88,6 +84,27 @@ export async function onRequestPost(context: any) {
     });
 
     if (stream) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        const { readable, writable } = new TransformStream();
+        const writer = writable.getWriter();
+
+        // Wrap JSON response in SSE format
+        const encoder = new TextEncoder();
+        writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        writer.write(encoder.encode(`data: [DONE]\n\n`));
+        writer.close();
+
+        return new Response(readable, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      }
+
       // Pass through the streaming response directly
       // If the upstream API returns standard SSE, we can just pipe it.
       // We wrap it in a new Response to ensure headers are correct for the client.

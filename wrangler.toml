@@ -1,0 +1,6 @@
+name = "wxcloud-express"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["0 2 * * *", "0 10 * * *"] # UTC time: 02:00 = 10:00 CST, 10:00 = 18:00 CST
+

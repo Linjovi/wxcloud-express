@@ -65,4 +65,5 @@ export interface ComplimentStyle {
   title: string;
   prompt: string;
   tags?: string[];
+  source?: string[];
 }

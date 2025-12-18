@@ -12,6 +12,9 @@ export interface CacheEntry<T> {
 
 export const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
+// Compliment styles cache never expires automatically (updated by cron)
+export const COMPLIMENT_CACHE_DURATION = 24 * 60 * 60 * 1000; 
+
 export const CACHE: {
   weibo: CacheEntry<HotSearchItem[]> | null;
   douyin: CacheEntry<DouyinHotSearchItem[]> | null;

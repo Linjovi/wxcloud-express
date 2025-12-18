@@ -1,5 +1,12 @@
 import { ComplimentStyle } from "../types";
 import { CACHE, CACHE_DURATION } from "../cache";
+import {
+  getDouyinHotSearch,
+  getXiaohongshuHotSearch,
+  createDeepSeekClient,
+  safeParseJSON,
+  generateComplimentPrompt,
+} from "../utils";
 
 export const DEFAULT_STYLES: Record<string, string> = {
   清除路人:
@@ -11,6 +18,104 @@ export const DEFAULT_STYLES: Record<string, string> = {
     "二次元动漫风格，日本动画电影质感，新海诚画风，唯美光影，细腻笔触，梦幻色彩，2D插画效果。",
   更换天气: "调整环境天气效果，模拟自然真实的气象氛围，将天气更改为：",
 };
+
+/**
+ * 核心逻辑：获取热搜 -> 提取主题 -> 生成提示词 -> 更新缓存
+ */
+export async function refreshStyles(context: any) {
+  try {
+    console.log("Starting refreshStyles...");
+    const [douyin, xiaohongshu] = await Promise.all([
+      getDouyinHotSearch(),
+      getXiaohongshuHotSearch(),
+    ]);
+
+    const allItems = [...douyin, ...xiaohongshu];
+    const uniqueTitles = Array.from(new Set(allItems.map((i) => i.title)));
+    const titlesToAnalyze = uniqueTitles.slice(0, 50);
+
+    const client = createDeepSeekClient(context.env);
+
+    // Step 1: Select Titles
+    const selectionCompletion = await client.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `你是一个专业的视觉风格分析师。
+任务：分析提供的热搜标题，提炼出适合作为“AI写真/修图/换装”的风格主题。
+要求：
+1. 不要直接返回热搜原标题，而是归纳总结成简短的主题名称（如：“清冷感财阀千金”、“赛博朋克风”、“法式复古胶片”等）。
+2. 只选择与妆容、穿搭、氛围、摄影、二次元相关的内容。
+3. 严格返回 JSON 对象：{"items": [{"title": "主题名称", "source": ["来源热搜词1", "来源热搜词2"]}]}
+4. 返回 6-10 个最热门且适合的主题。
+`,
+        },
+        {
+          role: "user",
+          content: `热搜列表：\n${JSON.stringify(titlesToAnalyze)}`,
+        },
+      ],
+      model: "deepseek-chat",
+      temperature: 1.0,
+      thinking: { type: "enabled" },
+      response_format: { type: "json_object" },
+    } as any);
+
+    const selectionContent =
+      selectionCompletion.choices[0].message.content || "";
+    console.log("AI Selection Result:", selectionContent);
+    const parsedSelection = safeParseJSON(selectionContent);
+    const items = parsedSelection.items || [];
+    const selectedTitles = Array.isArray(items)
+      ? items
+      : parsedSelection.titles || parsedSelection.list || [];
+
+    if (Array.isArray(selectedTitles) && selectedTitles.length > 0) {
+      // Initialize styles with empty prompts first
+      const styles: ComplimentStyle[] = selectedTitles.map((item: any) => {
+        if (typeof item === "string") {
+          return { title: item, prompt: "" };
+        }
+        return {
+          title: item.title,
+          prompt: "",
+          source: item.source,
+        };
+      });
+
+      // Update Cache immediately with titles
+      setComplimentStylesCache(styles);
+
+      // Step 2: Generate Prompts (Sequential or Parallel)
+      console.log(
+        "Generating prompts for:",
+        styles.map((s) => s.title)
+      );
+
+      for (const styleItem of styles) {
+        try {
+          // Use title (which is the theme name) for prompt generation
+          const prompt = await generateComplimentPrompt(
+            client,
+            styleItem.title,
+            1.1
+          );
+          if (prompt) {
+            updateComplimentStylesCache({
+              title: styleItem.title,
+              prompt: prompt,
+            });
+          }
+        } catch (err) {
+          console.error(`Prompt gen error for ${styleItem.title}:`, err);
+        }
+      }
+      console.log("Refresh completed.");
+    }
+  } catch (error) {
+    console.error("refreshStyles Error:", error);
+  }
+}
 
 export function setComplimentStylesCache(styles: ComplimentStyle[]) {
   console.log("Setting compliment styles cache:", styles);
@@ -40,10 +145,8 @@ export function updateComplimentStylesCache(style: ComplimentStyle) {
 }
 
 export function getComplimentStylesCache() {
-  if (
-    CACHE.complimentStyles &&
-    Date.now() - CACHE.complimentStyles.timestamp < CACHE_DURATION
-  ) {
+  if (CACHE.complimentStyles) {
+    // Ignore CACHE_DURATION, return data until next update overwrite it
     return CACHE.complimentStyles.data;
   }
   return null;
