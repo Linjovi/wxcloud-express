@@ -867,40 +867,40 @@
 
 "@cloudflare/kv-asset-handler@0.4.1":
   version "0.4.1"
-  resolved "https://npm.poizon.com/@cloudflare%2fkv-asset-handler/-/kv-asset-handler-0.4.1.tgz#717319743437e36c2eaafbb317fdb76b5cff0d88"
+  resolved "https://npm.poizon.com/@cloudflare%2fkv-asset-handler/-/kv-asset-handler-0.4.1.tgz"
   integrity sha512-Nu8ahitGFFJztxUml9oD/DLb7Z28C8cd8F46IVQ7y5Btz575pvMY8AqZsXkX7Gds29eCKdMgIHjIvzskHgPSFg==
   dependencies:
     mime "^3.0.0"
 
 "@cloudflare/unenv-preset@2.7.13":
   version "2.7.13"
-  resolved "https://npm.poizon.com/@cloudflare%2funenv-preset/-/unenv-preset-2.7.13.tgz#c8f922f9bce0f17337277ede52fce3f268286041"
+  resolved "https://npm.poizon.com/@cloudflare%2funenv-preset/-/unenv-preset-2.7.13.tgz"
   integrity sha512-NulO1H8R/DzsJguLC0ndMuk4Ufv0KSlN+E54ay9rn9ZCQo0kpAPwwh3LhgpZ96a3Dr6L9LqW57M4CqC34iLOvw==
 
-"@cloudflare/workerd-darwin-64@1.20251213.0":
-  version "1.20251213.0"
-  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-darwin-64/-/workerd-darwin-64-1.20251213.0.tgz#04d639bcbeeb39a5596ec070dae1e29e4ecf5507"
-  integrity sha512-29mPlP7xgyik85EHotrakuQur5WfuAR4tRAntRFwLEFnB88RB7br6Me9wb15itu/1l9nMyimZWhBMAfnEs5PQw==
+"@cloudflare/workerd-darwin-64@1.20251217.0":
+  version "1.20251217.0"
+  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-darwin-64/-/workerd-darwin-64-1.20251217.0.tgz#b07bb7dd2d706fcaf5aa9b07c873fc697c21d548"
+  integrity sha512-DN6vT+9ho61d/1/YuILW4VS+N1JBLaixWRL1vqNmhgbf8J8VHwWWotrRruEUYigJKx2yZyw6YsasE+yLXgx/Fw==
 
-"@cloudflare/workerd-darwin-arm64@1.20251213.0":
-  version "1.20251213.0"
-  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-darwin-arm64/-/workerd-darwin-arm64-1.20251213.0.tgz#4601e26bbc6c664477e923888cf1477d6b2d9a71"
-  integrity sha512-gn4nIg7hbGyHxyNdVqDmSvgMfgytFr4Z/OXGp2ZorP1+OKeGLvfQ70LEEYY/kZwSsbOqEYDXyU6LzPj4n86NZQ==
+"@cloudflare/workerd-darwin-arm64@1.20251217.0":
+  version "1.20251217.0"
+  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-darwin-arm64/-/workerd-darwin-arm64-1.20251217.0.tgz"
+  integrity sha512-5nZOpRTkHmtcTc4Wbr1mj/O3dLb6aHZSiJuVBgtdbVcVmOXueSay3hnw1PXEyR+vpTKGUPkM+omUIslKHWnXDw==
 
-"@cloudflare/workerd-linux-64@1.20251213.0":
-  version "1.20251213.0"
-  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-linux-64/-/workerd-linux-64-1.20251213.0.tgz#aec4ecd3f9a0894e72c6e27bce0221c507cf58da"
-  integrity sha512-zMO9tV4aGDZnRfsWg5MC1mbXaRdutDcMeqH5XMzGHsuKO66tbBipV38gX76PLqxKH+UfbE3Uo3jk3iqIuPEF3g==
+"@cloudflare/workerd-linux-64@1.20251217.0":
+  version "1.20251217.0"
+  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-linux-64/-/workerd-linux-64-1.20251217.0.tgz#aa9eec4048f49ff46348b0e6c4c65698fee6dbf2"
+  integrity sha512-uoPGhMaZVXPpCsU0oG3HQzyVpXCGi5rU+jcHRjUI7DXM4EwctBGvZ380Knkja36qtl+ZvSKVR1pUFSGdK+45Pg==
 
-"@cloudflare/workerd-linux-arm64@1.20251213.0":
-  version "1.20251213.0"
-  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-linux-arm64/-/workerd-linux-arm64-1.20251213.0.tgz#323893be6c84c048d128336df4378687314a428c"
-  integrity sha512-8pQk1dCzdyZdJXehIhxkFMTc5lTLxzqmxskCGlpbem/pWIPTAEjt25OFCxq5Z3iU/x/kI8tcQdYRYx77KS32mQ==
+"@cloudflare/workerd-linux-arm64@1.20251217.0":
+  version "1.20251217.0"
+  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-linux-arm64/-/workerd-linux-arm64-1.20251217.0.tgz#859a1553732527e3882d41efe2a8fcb73bbf5aeb"
+  integrity sha512-ixHnHKsiz1Xko+eDgCJOZ7EEUZKtmnYq3AjW3nkVcLFypSLks4C29E45zVewdaN4wq8sCLeyQCl6r1kS17+DQQ==
 
-"@cloudflare/workerd-windows-64@1.20251213.0":
-  version "1.20251213.0"
-  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-windows-64/-/workerd-windows-64-1.20251213.0.tgz#9b5afa296eb9eccadbeaa62de313007146a9235e"
-  integrity sha512-QBwfyZXTzI2JHLS7ZEuVVMC81PAQyNxPdcv9Dxd8wvV4QYF7B97h9pUtaBnqUdlBwL6e3O8QniYkOl8c7bEFJw==
+"@cloudflare/workerd-windows-64@1.20251217.0":
+  version "1.20251217.0"
+  resolved "https://npm.poizon.com/@cloudflare%2fworkerd-windows-64/-/workerd-windows-64-1.20251217.0.tgz#84e5f8ebf740c1b07daa5497c6aac213a396d9af"
+  integrity sha512-rP6USX+7ctynz3AtmKi+EvlLP3Xdr1ETrSdcnv693/I5QdUwBxq4yE1Lj6CV7GJizX6opXKYg8QMq0Q4eB9zRQ==
 
 "@cspotcode/source-map-support@0.8.1", "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
@@ -943,7 +943,7 @@
 
 "@esbuild/darwin-arm64@0.27.0":
   version "0.27.0"
-  resolved "https://npm.poizon.com/@esbuild%2fdarwin-arm64/-/darwin-arm64-0.27.0.tgz#5ad7c02bc1b1a937a420f919afe40665ba14ad1e"
+  resolved "https://npm.poizon.com/@esbuild%2fdarwin-arm64/-/darwin-arm64-0.27.0.tgz"
   integrity sha512-uJOQKYCcHhg07DL7i8MzjvS2LaP7W7Pn/7uA0B5S1EnqAirJtbyw4yC5jQ5qcFjHK9l6o/MX9QisBg12kNkdHg==
 
 "@esbuild/darwin-x64@0.27.0":
@@ -1061,7 +1061,7 @@
 
 "@img/sharp-darwin-arm64@0.33.5":
   version "0.33.5"
-  resolved "https://npm.poizon.com/@img%2fsharp-darwin-arm64/-/sharp-darwin-arm64-0.33.5.tgz#ef5b5a07862805f1e8145a377c8ba6e98813ca08"
+  resolved "https://npm.poizon.com/@img%2fsharp-darwin-arm64/-/sharp-darwin-arm64-0.33.5.tgz"
   integrity sha512-UT4p+iz/2H4twwAoLCqfA9UH5pI6DggwKEGuaPy7nCVQ8ZsiY5PIcrRvD1DzuY3qYL07NtIQcWnBSY/heikIFQ==
   optionalDependencies:
     "@img/sharp-libvips-darwin-arm64" "1.0.4"
@@ -1075,7 +1075,7 @@
 
 "@img/sharp-libvips-darwin-arm64@1.0.4":
   version "1.0.4"
-  resolved "https://npm.poizon.com/@img%2fsharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.0.4.tgz#447c5026700c01a993c7804eb8af5f6e9868c07f"
+  resolved "https://npm.poizon.com/@img%2fsharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.0.4.tgz"
   integrity sha512-XblONe153h0O2zuFfTAbQYAX2JhYmDHeWikp1LM9Hul9gVPjFY427k6dFEcOL72O01QxQsWi761svJ/ev9xEDg==
 
 "@img/sharp-libvips-darwin-x64@1.0.4":
@@ -1335,14 +1335,14 @@
 
 "@poppinss/colors@^4.1.5":
   version "4.1.6"
-  resolved "https://npm.poizon.com/@poppinss%2fcolors/-/colors-4.1.6.tgz#bf8546e30cfc5ee8dfe68988ce58eb0ad9d7c21b"
+  resolved "https://npm.poizon.com/@poppinss%2fcolors/-/colors-4.1.6.tgz"
   integrity sha512-H9xkIdFswbS8n1d6vmRd8+c10t2Qe+rZITbbDHHkQixH5+2x1FDGmi/0K+WgWiqQFKPSlIYB7jlH6Kpfn6Fleg==
   dependencies:
     kleur "^4.1.5"
 
 "@poppinss/dumper@^0.6.4":
   version "0.6.5"
-  resolved "https://npm.poizon.com/@poppinss%2fdumper/-/dumper-0.6.5.tgz#8992703338d80d2218fdc37245c8cfc67f0f6ac9"
+  resolved "https://npm.poizon.com/@poppinss%2fdumper/-/dumper-0.6.5.tgz"
   integrity sha512-NBdYIb90J7LfOI32dOewKI1r7wnkiH6m920puQ3qHUeZkxNkQiFnXVWoE6YtFSv6QOiPPf7ys6i+HWWecDz7sw==
   dependencies:
     "@poppinss/colors" "^4.1.5"
@@ -1351,7 +1351,7 @@
 
 "@poppinss/exception@^1.2.2":
   version "1.2.3"
-  resolved "https://npm.poizon.com/@poppinss%2fexception/-/exception-1.2.3.tgz#b713855e6c9fe2110fea0949455c50828145e64a"
+  resolved "https://npm.poizon.com/@poppinss%2fexception/-/exception-1.2.3.tgz"
   integrity sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==
 
 "@puppeteer/browsers@2.10.13":
@@ -1369,12 +1369,12 @@
 
 "@sindresorhus/is@^7.0.2":
   version "7.1.1"
-  resolved "https://npm.poizon.com/@sindresorhus%2fis/-/is-7.1.1.tgz#e32f9b1e0d7e14ee9504cdc7aae4a18dea8c3ef7"
+  resolved "https://npm.poizon.com/@sindresorhus%2fis/-/is-7.1.1.tgz"
   integrity sha512-rO92VvpgMc3kfiTjGT52LEtJ8Yc5kCWhZjLQ3LwlA4pSgPpQO7bVpYXParOD8Jwf+cVQECJo3yP/4I8aZtUQTQ==
 
 "@speed-highlight/core@^1.2.7":
   version "1.2.12"
-  resolved "https://npm.poizon.com/@speed-highlight%2fcore/-/core-1.2.12.tgz#5578ad2b92b0f7edc9ad46d9a7f921ff799d8a42"
+  resolved "https://npm.poizon.com/@speed-highlight%2fcore/-/core-1.2.12.tgz"
   integrity sha512-uilwrK0Ygyri5dToHYdZSjcvpS2ZwX0w5aSt3GCEN9hrjxWCoeV4Z2DTXuxjwbntaLQIEEAlCeNQss5SoHvAEA==
 
 "@tootallnate/quickjs-emscripten@^0.23.0":
@@ -1870,7 +1870,7 @@ acorn-import-phases@^1.0.3:
 
 acorn-walk@8.3.2:
   version "8.3.2"
-  resolved "https://npm.poizon.com/acorn-walk/-/acorn-walk-8.3.2.tgz#7703af9415f1b6db9315d6895503862e231d34aa"
+  resolved "https://npm.poizon.com/acorn-walk/-/acorn-walk-8.3.2.tgz"
   integrity sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==
 
 acorn-walk@^8.1.1:
@@ -1882,7 +1882,7 @@ acorn-walk@^8.1.1:
 
 acorn@8.14.0:
   version "8.14.0"
-  resolved "https://npm.poizon.com/acorn/-/acorn-8.14.0.tgz#063e2c70cac5fb4f6467f0b11152e04c682795b0"
+  resolved "https://npm.poizon.com/acorn/-/acorn-8.14.0.tgz"
   integrity sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==
 
 acorn@^8.11.0, acorn@^8.15.0, acorn@^8.4.1:
@@ -2135,7 +2135,7 @@ binary-extensions@^2.0.0:
 
 blake3-wasm@2.1.5:
   version "2.1.5"
-  resolved "https://npm.poizon.com/blake3-wasm/-/blake3-wasm-2.1.5.tgz#b22dbb84bc9419ed0159caa76af4b1b132e6ba52"
+  resolved "https://npm.poizon.com/blake3-wasm/-/blake3-wasm-2.1.5.tgz"
   integrity sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==
 
 body-parser@1.20.3:
@@ -2355,7 +2355,7 @@ color-name@^1.0.0, color-name@~1.1.4:
 
 color-string@^1.9.0:
   version "1.9.1"
-  resolved "https://npm.poizon.com/color-string/-/color-string-1.9.1.tgz#4467f9146f036f855b764dfb5bf8582bf342c7a4"
+  resolved "https://npm.poizon.com/color-string/-/color-string-1.9.1.tgz"
   integrity sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg==
   dependencies:
     color-name "^1.0.0"
@@ -2363,7 +2363,7 @@ color-string@^1.9.0:
 
 color@^4.2.3:
   version "4.2.3"
-  resolved "https://npm.poizon.com/color/-/color-4.2.3.tgz#d781ecb5e57224ee43ea9627560107c0e0c6463a"
+  resolved "https://npm.poizon.com/color/-/color-4.2.3.tgz"
   integrity sha512-1rXeuUUiGGrykh+CeBdu5Ie7OJwinCgQY0bc7GCRxy5xVHy+moaqkpL/jqQq0MtQOeYcrqEz4abc5f0KtU7W4A==
   dependencies:
     color-convert "^2.0.1"
@@ -2636,7 +2636,7 @@ detect-libc@^1.0.3:
 
 detect-libc@^2.0.3:
   version "2.1.2"
-  resolved "https://npm.poizon.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
+  resolved "https://npm.poizon.com/detect-libc/-/detect-libc-2.1.2.tgz"
   integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
 
 detect-node@^2.0.4:
@@ -2803,7 +2803,7 @@ error-ex@^1.3.1:
 
 error-stack-parser-es@^1.0.5:
   version "1.0.5"
-  resolved "https://npm.poizon.com/error-stack-parser-es/-/error-stack-parser-es-1.0.5.tgz#e6a1655dd12f39bb3a85bf4c7088187d78740327"
+  resolved "https://npm.poizon.com/error-stack-parser-es/-/error-stack-parser-es-1.0.5.tgz"
   integrity sha512-5qucVt2XcuGMcEGgWI7i+yZpmpByQ8J1lHhcL7PwqCwu9FPP3VUXzT4ltHe5i2z9dePwEHcDVOAfSnHsOlCXRA==
 
 es-define-property@^1.0.1:
@@ -2840,7 +2840,7 @@ es-set-tostringtag@^2.1.0:
 
 esbuild@0.27.0:
   version "0.27.0"
-  resolved "https://npm.poizon.com/esbuild/-/esbuild-0.27.0.tgz#db983bed6f76981361c92f50cf6a04c66f7b3e1d"
+  resolved "https://npm.poizon.com/esbuild/-/esbuild-0.27.0.tgz"
   integrity sha512-jd0f4NHbD6cALCyGElNpGAOtWxSq46l9X/sWB0Nzd5er4Kz2YTm+Vl0qKFT9KUJvD8+fiO8AvoHhFvEatfVixA==
   optionalDependencies:
     "@esbuild/aix-ppc64" "0.27.0"
@@ -2975,7 +2975,7 @@ execa@^5.0.0:
 
 exit-hook@2.2.1:
   version "2.2.1"
-  resolved "https://npm.poizon.com/exit-hook/-/exit-hook-2.2.1.tgz#007b2d92c6428eda2b76e7016a34351586934593"
+  resolved "https://npm.poizon.com/exit-hook/-/exit-hook-2.2.1.tgz"
   integrity sha1-AHstksZCjtorducBajQ1FYaTRZM=
 
 express@^4.16.4, express@^4.17.3:
@@ -3277,6 +3277,11 @@ get-uri@^6.0.1:
     basic-ftp "^5.0.2"
     data-uri-to-buffer "^6.0.2"
     debug "^4.3.4"
+
+gifshot@^0.4.5:
+  version "0.4.5"
+  resolved "https://npm.poizon.com/gifshot/-/gifshot-0.4.5.tgz"
+  integrity sha512-oaOTT7patjxFFv7ptR0R0NNhqy3ZAmcLUQCjM/sTsvsQaUAlB2fHirLajcNAKJ6ufoVhdP+ZkXYvmUycHP1FNg==
 
 glob-parent@~5.1.2:
   version "5.1.2"
@@ -3641,7 +3646,7 @@ is-arrayish@^0.2.1:
 
 is-arrayish@^0.3.1:
   version "0.3.4"
-  resolved "https://npm.poizon.com/is-arrayish/-/is-arrayish-0.3.4.tgz#1ee5553818511915685d33bb13d31bf854e5059d"
+  resolved "https://npm.poizon.com/is-arrayish/-/is-arrayish-0.3.4.tgz"
   integrity sha512-m6UrgzFVUYawGBh1dUsWR5M2Clqic9RVXC/9f8ceNlv2IcO9j9J/z8UoCLPqtsPBFNzEpfR3xftohbfqDx8EQA==
 
 is-binary-path@~2.1.0:
@@ -3820,7 +3825,7 @@ kind-of@^6.0.2:
 
 kleur@^4.1.5:
   version "4.1.5"
-  resolved "https://npm.poizon.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
+  resolved "https://npm.poizon.com/kleur/-/kleur-4.1.5.tgz"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
 launch-editor@^2.6.0:
@@ -4274,7 +4279,7 @@ mime@1.6.0:
 
 mime@^3.0.0:
   version "3.0.0"
-  resolved "https://npm.poizon.com/mime/-/mime-3.0.0.tgz#b374550dca3a0c18443b0c950a6a58f1931cf7a7"
+  resolved "https://npm.poizon.com/mime/-/mime-3.0.0.tgz"
   integrity sha1-s3RVDco6DBhEOwyVCmpY8ZMc96c=
 
 mimic-fn@^2.1.0:
@@ -4282,10 +4287,10 @@ mimic-fn@^2.1.0:
   resolved "https://npm.poizon.com/mimic-fn/-/mimic-fn-2.1.0.tgz"
   integrity sha1-ftLCzMyvhNP/y3pptXcR/CCDQBs=
 
-miniflare@4.20251213.0:
-  version "4.20251213.0"
-  resolved "https://npm.poizon.com/miniflare/-/miniflare-4.20251213.0.tgz#13bd393a797bd16a029bbf116caeceab18080d75"
-  integrity sha512-/Or0LuRA6dQMKvL7nztPWNOVXosrJRBiO0BdJX9LUIesyeAUWIZMPFmP9XX+cdny2fIUcqYcG4DuoL5JHxj95w==
+miniflare@4.20251217.0:
+  version "4.20251217.0"
+  resolved "https://npm.poizon.com/miniflare/-/miniflare-4.20251217.0.tgz"
+  integrity sha512-8xsTQbPS6YV+ABZl9qiJIbsum6hbpbhqiyKpOVdzZrhK+1N8EFpT8R6aBZff7kezGmxYZSntjgjqTwJmj3JLgA==
   dependencies:
     "@cspotcode/source-map-support" "0.8.1"
     acorn "8.14.0"
@@ -4295,7 +4300,7 @@ miniflare@4.20251213.0:
     sharp "^0.33.5"
     stoppable "1.1.0"
     undici "7.14.0"
-    workerd "1.20251213.0"
+    workerd "1.20251217.0"
     ws "8.18.0"
     youch "4.1.0-beta.10"
     zod "3.22.3"
@@ -4675,12 +4680,12 @@ path-to-regexp@0.1.12:
 
 path-to-regexp@6.3.0:
   version "6.3.0"
-  resolved "https://npm.poizon.com/path-to-regexp/-/path-to-regexp-6.3.0.tgz#2b6a26a337737a8e1416f9272ed0766b1c0389f4"
+  resolved "https://npm.poizon.com/path-to-regexp/-/path-to-regexp-6.3.0.tgz"
   integrity sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==
 
 pathe@^2.0.3:
   version "2.0.3"
-  resolved "https://npm.poizon.com/pathe/-/pathe-2.0.3.tgz#3ecbec55421685b70a9da872b2cff3e1cbed1716"
+  resolved "https://npm.poizon.com/pathe/-/pathe-2.0.3.tgz"
   integrity sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==
 
 pend@~1.2.0:
@@ -5275,7 +5280,7 @@ shallow-clone@^3.0.0:
 
 sharp@^0.33.5:
   version "0.33.5"
-  resolved "https://npm.poizon.com/sharp/-/sharp-0.33.5.tgz#13e0e4130cc309d6a9497596715240b2ec0c594e"
+  resolved "https://npm.poizon.com/sharp/-/sharp-0.33.5.tgz"
   integrity sha512-haPVm1EkS9pgvHrQ/F3Xy+hgcuMV0Wm9vfIBSiwZ05k+xgb0PkBQpGsAA/oWdDobNaZTH5ppvHtzCFbnSEwHVw==
   dependencies:
     color "^4.2.3"
@@ -5371,7 +5376,7 @@ signal-exit@^4.0.1:
 
 simple-swizzle@^0.2.2:
   version "0.2.4"
-  resolved "https://npm.poizon.com/simple-swizzle/-/simple-swizzle-0.2.4.tgz#a8d11a45a11600d6a1ecdff6363329e3648c3667"
+  resolved "https://npm.poizon.com/simple-swizzle/-/simple-swizzle-0.2.4.tgz"
   integrity sha512-nAu1WFPQSMNr2Zn9PGSZK9AGn4t/y97lEm+MXTtUDwfP0ksAIX4nO+6ruD9Jwut4C49SB1Ws+fbXsm/yScWOHw==
   dependencies:
     is-arrayish "^0.3.1"
@@ -5465,7 +5470,7 @@ statuses@2.0.1:
 
 stoppable@1.1.0:
   version "1.1.0"
-  resolved "https://npm.poizon.com/stoppable/-/stoppable-1.1.0.tgz#32da568e83ea488b08e4d7ea2c3bcc9d75015d5b"
+  resolved "https://npm.poizon.com/stoppable/-/stoppable-1.1.0.tgz"
   integrity sha512-KXDYZ9dszj6bzvnEMRYvxgeTHU74QBFL54XKtP3nyMuJ81CFYtABZ3bAzL2EdFUaEwJOBOgENyFj3R7oTzDyyw==
 
 streamx@^2.15.0, streamx@^2.21.0:
@@ -5573,7 +5578,7 @@ style-to-object@1.0.14:
 
 supports-color@^10.0.0:
   version "10.2.2"
-  resolved "https://npm.poizon.com/supports-color/-/supports-color-10.2.2.tgz#466c2978cc5cd0052d542a0b576461c2b802ebb4"
+  resolved "https://npm.poizon.com/supports-color/-/supports-color-10.2.2.tgz"
   integrity sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==
 
 supports-color@^8.0.0:
@@ -5732,12 +5737,12 @@ undici-types@~7.16.0:
 
 undici@7.14.0:
   version "7.14.0"
-  resolved "https://npm.poizon.com/undici/-/undici-7.14.0.tgz#7e616eeb3900deb1c4dda0e51384303975eec72c"
+  resolved "https://npm.poizon.com/undici/-/undici-7.14.0.tgz"
   integrity sha512-Vqs8HTzjpQXZeXdpsfChQTlafcMQaaIwnGwLam1wudSSjlJeQ3bw1j+TLPePgrCnCpUXx7Ba5Pdpf5OBih62NQ==
 
 unenv@2.0.0-rc.24:
   version "2.0.0-rc.24"
-  resolved "https://npm.poizon.com/unenv/-/unenv-2.0.0-rc.24.tgz#dd0035c3e93fedfa12c8454e34b7f17fe83efa2e"
+  resolved "https://npm.poizon.com/unenv/-/unenv-2.0.0-rc.24.tgz"
   integrity sha512-i7qRCmY42zmCwnYlh9H2SvLEypEFGye5iRmEMKjcGi7zk9UquigRjFtTLz0TYqr0ZGLZhaMHl/foy1bZR+Cwlw==
   dependencies:
     pathe "^2.0.3"
@@ -6055,30 +6060,30 @@ wildcard@^2.0.0:
   resolved "https://npm.poizon.com/wildcard/-/wildcard-2.0.1.tgz"
   integrity sha512-CC1bOL87PIWSBhDcTrdeLo6eGT7mCFtrg0uIJtqJUFyK+eJnzl8A1niH56uu7KMa5XFrtiV+AQuHO3n7DsHnLQ==
 
-workerd@1.20251213.0:
-  version "1.20251213.0"
-  resolved "https://npm.poizon.com/workerd/-/workerd-1.20251213.0.tgz#ea19f67d71d8b872ee1b1f77a9a06f229378813f"
-  integrity sha512-knLMSqmUKo7EO1wV69u8o2J+6RVDow3H5qK9f1tzk24fd4rEZXkR1cxFiYisfTRjk/Jl3/1URAkQRSDAiWE5RA==
+workerd@1.20251217.0:
+  version "1.20251217.0"
+  resolved "https://npm.poizon.com/workerd/-/workerd-1.20251217.0.tgz"
+  integrity sha512-s3mHDSWwHTduyY8kpHOsl27ZJ4ziDBJlc18PfBvNMqNnhO7yBeemlxH7bo7yQyU1foJrIZ6IENHDDg0Z9N8zQA==
   optionalDependencies:
-    "@cloudflare/workerd-darwin-64" "1.20251213.0"
-    "@cloudflare/workerd-darwin-arm64" "1.20251213.0"
-    "@cloudflare/workerd-linux-64" "1.20251213.0"
-    "@cloudflare/workerd-linux-arm64" "1.20251213.0"
-    "@cloudflare/workerd-windows-64" "1.20251213.0"
+    "@cloudflare/workerd-darwin-64" "1.20251217.0"
+    "@cloudflare/workerd-darwin-arm64" "1.20251217.0"
+    "@cloudflare/workerd-linux-64" "1.20251217.0"
+    "@cloudflare/workerd-linux-arm64" "1.20251217.0"
+    "@cloudflare/workerd-windows-64" "1.20251217.0"
 
 wrangler@^4.55.0:
-  version "4.55.0"
-  resolved "https://npm.poizon.com/wrangler/-/wrangler-4.55.0.tgz#e22eb997d3fccdcb09dd55524ebde07066a8c2d7"
-  integrity sha512-50icmLX8UbNaq0FmFHbcvvOh7I6rDA/FyaMYRcNSl1iX0JwuKswezmmtYvYPxPTkbYz7FUYR8GPZLaT23uzFqw==
+  version "4.56.0"
+  resolved "https://npm.poizon.com/wrangler/-/wrangler-4.56.0.tgz"
+  integrity sha512-Nqi8duQeRbA+31QrD6QlWHW3IZVnuuRxMy7DEg46deUzywivmaRV/euBN5KKXDPtA24VyhYsK7I0tkb7P5DM2w==
   dependencies:
     "@cloudflare/kv-asset-handler" "0.4.1"
     "@cloudflare/unenv-preset" "2.7.13"
     blake3-wasm "2.1.5"
     esbuild "0.27.0"
-    miniflare "4.20251213.0"
+    miniflare "4.20251217.0"
     path-to-regexp "6.3.0"
     unenv "2.0.0-rc.24"
-    workerd "1.20251213.0"
+    workerd "1.20251217.0"
   optionalDependencies:
     fsevents "~2.3.2"
 
@@ -6116,7 +6121,7 @@ wrappy@1:
 
 ws@8.18.0:
   version "8.18.0"
-  resolved "https://npm.poizon.com/ws/-/ws-8.18.0.tgz#0d7505a6eafe2b0e712d232b42279f53bc289bbc"
+  resolved "https://npm.poizon.com/ws/-/ws-8.18.0.tgz"
   integrity sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw==
 
 ws@^8.13.0, ws@^8.18.0, ws@^8.18.3:
@@ -6172,7 +6177,7 @@ yocto-queue@^1.0.0:
 
 youch-core@^0.3.3:
   version "0.3.3"
-  resolved "https://npm.poizon.com/youch-core/-/youch-core-0.3.3.tgz#c5d3d85aeea0d8bc7b36e9764ed3f14b7ceddc7d"
+  resolved "https://npm.poizon.com/youch-core/-/youch-core-0.3.3.tgz"
   integrity sha512-ho7XuGjLaJ2hWHoK8yFnsUGy2Y5uDpqSTq1FkHLK4/oqKtyUU1AFbOOxY4IpC9f0fTLjwYbslUz0Po5BpD1wrA==
   dependencies:
     "@poppinss/exception" "^1.2.2"
@@ -6180,7 +6185,7 @@ youch-core@^0.3.3:
 
 youch@4.1.0-beta.10:
   version "4.1.0-beta.10"
-  resolved "https://npm.poizon.com/youch/-/youch-4.1.0-beta.10.tgz#94702059e0ba7668025f5cd1b5e5c0f3eb0e83c2"
+  resolved "https://npm.poizon.com/youch/-/youch-4.1.0-beta.10.tgz"
   integrity sha512-rLfVLB4FgQneDr0dv1oddCVZmKjcJ6yX6mS4pU82Mq/Dt9a3cLZQ62pDBL4AUO+uVrCvtWz3ZFUL2HFAFJ/BXQ==
   dependencies:
     "@poppinss/colors" "^4.1.5"
@@ -6191,7 +6196,7 @@ youch@4.1.0-beta.10:
 
 zod@3.22.3:
   version "3.22.3"
-  resolved "https://npm.poizon.com/zod/-/zod-3.22.3.tgz#2fbc96118b174290d94e8896371c95629e87a060"
+  resolved "https://npm.poizon.com/zod/-/zod-3.22.3.tgz"
   integrity sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==
 
 zod@^3.24.1:
