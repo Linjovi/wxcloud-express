@@ -6,6 +6,8 @@ interface MemeType1Props {
   style: "cartoon" | "realistic";
   setStyle: (style: "cartoon" | "realistic") => void;
   triggerUpload: (target: "main") => void;
+  description: string;
+  setDescription: (description: string) => void;
 }
 
 export const MemeType1: React.FC<MemeType1Props> = ({
@@ -13,6 +15,8 @@ export const MemeType1: React.FC<MemeType1Props> = ({
   style,
   setStyle,
   triggerUpload,
+  description,
+  setDescription,
 }) => {
   return (
     <div className="space-y-6">
@@ -70,6 +74,22 @@ export const MemeType1: React.FC<MemeType1Props> = ({
             <span className="text-2xl">📸</span>
             <span className="font-bold text-sm">写实版</span>
           </button>
+        </div>
+      </div>
+
+      <div className="bg-white p-4 rounded-2xl shadow-sm border border-green-100">
+        <label className="text-sm font-bold text-gray-500 mb-3 block">
+          描述参考（可选）
+        </label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="例如：想要生成的表情类型、动作、场景等，帮助AI更好地理解你的需求..."
+          className="w-full p-3 rounded-xl border-2 border-gray-200 bg-gray-50 focus:border-green-500 focus:bg-white focus:outline-none transition-colors text-sm resize-none min-h-[100px]"
+          maxLength={200}
+        />
+        <div className="text-xs text-gray-400 mt-2 text-right">
+          {description.length}/200
         </div>
       </div>
     </div>

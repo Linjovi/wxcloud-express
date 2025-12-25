@@ -4,7 +4,7 @@ export async function onRequestPost(context: any) {
   const req = context.request;
 
   try {
-    const { image, refImage, style, stream, type = 1, gifPrompt } = await req.json();
+    const { image, refImage, style, stream, type = 1, gifPrompt, description } = await req.json();
 
     if (!image) {
       return new Response(
@@ -24,11 +24,12 @@ export async function onRequestPost(context: any) {
     if (type === 1) {
       // Type 1: 9-Grid Meme
       model = "nano-banana";
+      const descriptionText = description && description.trim() ? `。用户希望：${description.trim()}` : "";
       if (style === "cartoon") {
-        prompt = `以这张图片的主体为主角，制作九宫格的表情包。纯白色背景。卡通风格。需包含6-9个生动夸张的表情和动作（如：震惊、大笑、委屈、疑惑、暗中观察等）。画面精致，可爱搞怪，极具表现力。不要在图片中包含任何文字。`;
+        prompt = `以这张图片的主体为主角，制作九宫格的表情包。纯白色背景。卡通风格。需包含6-9个生动夸张的表情和动作（如：震惊、大笑、委屈、疑惑、暗中观察等）。画面精致，可爱搞怪，极具表现力。不要在图片中包含任何文字${descriptionText}`;
       } else {
         // Realistic default
-        prompt = `以这张照片中的动物为主角，制作九宫格的表情包，需包含9个生动夸张的表情和动作。不要在图片中包含任何文字。`;
+        prompt = `以这张照片中的动物为主角，制作九宫格的表情包，需包含9个生动夸张的表情和动作。不要在图片中包含任何文字${descriptionText}`;
       }
     } else if (type === 2) {
       // Type 2: Expression Transfer

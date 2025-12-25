@@ -81,6 +81,7 @@ const MemeApp: React.FC = () => {
   const [fps, setFps] = useState(8); // Default FPS for Type 3
 
   const [style, setStyle] = useState<StyleType>("cartoon");
+  const [description, setDescription] = useState(""); // For Type 1 description
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -170,6 +171,7 @@ const MemeApp: React.FC = () => {
           image,
           refImage: activeTab === 2 ? refImage : undefined,
           style: activeTab === 1 ? style : undefined,
+          description: activeTab === 1 ? description : undefined,
           gifPrompt: activeTab === 3 ? gifPrompt : undefined,
           stream: true,
         }),
@@ -298,6 +300,7 @@ const MemeApp: React.FC = () => {
   const reset = () => {
     setImage(null);
     setRefImage(null);
+    setDescription("");
     setGeneratedImage(null);
     setGeneratedFrames(null);
     setError(null);
@@ -372,6 +375,8 @@ const MemeApp: React.FC = () => {
               style={style}
               setStyle={setStyle}
               triggerUpload={triggerUpload}
+              description={description}
+              setDescription={setDescription}
             />
           )}
           {activeTab === 2 && (

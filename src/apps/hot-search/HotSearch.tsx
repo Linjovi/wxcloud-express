@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { GossipCatAvatar } from "../../common/components/Icons";
 import {
   getWeiboHotSearch,
   getDouyinHotSearch,
   getXiaohongshuHotSearch,
   getMaoyanWebHeat,
-  getHotSearchSummary,
-  SummaryData,
 } from "./api";
 import { HotSearchItem, MaoyanWebHeatItem } from "./types";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -24,14 +21,6 @@ interface SourceData {
   summary?: string;
 }
 
-const LOADING_MESSAGES = [
-  "吃瓜喵正在疯狂吃瓜中...",
-  "正在打听娱乐圈的小秘密...",
-  "嘘...好像听到了什么不得了的事情...",
-  "正在整理今天的瓜田...",
-  "前排出售瓜子饮料矿泉水...",
-  "瓜太大，本喵需要消化一下...",
-];
 
 export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
   const [source, setSource] = useState<Source>("douyin");
@@ -40,9 +29,6 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
   const [xhsData, setXhsData] = useState<SourceData | null>(null);
   const [maoyanData, setMaoyanData] = useState<SourceData | null>(null);
 
-  const [summaryData, setSummaryData] = useState<SummaryData | null>(null);
-  const [summaryLoading, setSummaryLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState(LOADING_MESSAGES[0]);
 
   const [loading, setLoading] = useState<Record<Source, boolean>>({
     weibo: false,
@@ -133,33 +119,6 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
     }
   };
 
-  const fetchSummary = async () => {
-    // Check cache first
-    const cachedSummary = localStorage.getItem("hotSearchSummary");
-    const cachedTime = localStorage.getItem("hotSearchSummaryTime");
-    if (cachedSummary && cachedTime) {
-      if (Date.now() - parseInt(cachedTime) < 60 * 60 * 1000) {
-        try {
-          setSummaryData(JSON.parse(cachedSummary));
-          return;
-        } catch (e) {
-          console.error("Failed to parse summary cache", e);
-        }
-      }
-    }
-
-    setSummaryLoading(true);
-    try {
-      const data = await getHotSearchSummary();
-      setSummaryData(data);
-      localStorage.setItem("hotSearchSummary", JSON.stringify(data));
-      localStorage.setItem("hotSearchSummaryTime", Date.now().toString());
-    } catch (err) {
-      console.error("Failed to fetch summary", err);
-    } finally {
-      setSummaryLoading(false);
-    }
-  };
 
   const loadDataIfNeeded = (targetSource: Source) => {
     const currentMemoryData = getCurrentData(targetSource);
@@ -192,20 +151,8 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
     loadDataIfNeeded("xiaohongshu");
     loadDataIfNeeded("weibo");
     loadDataIfNeeded("maoyan");
-    fetchSummary();
   }, []);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (summaryLoading) {
-      let index = 0;
-      interval = setInterval(() => {
-        index = (index + 1) % LOADING_MESSAGES.length;
-        setLoadingText(LOADING_MESSAGES[index]);
-      }, 4000);
-    }
-    return () => clearInterval(interval);
-  }, [summaryLoading]);
 
   const handleTabChange = (newSource: Source) => {
     setSource(newSource);
@@ -258,57 +205,6 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
     }
   };
 
-  const renderSummarySection = () => {
-    if (summaryLoading) {
-      return (
-        <div className="mx-4 mt-4 p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 flex flex-col items-center justify-center gap-4 min-h-[120px]">
-          <GossipCatAvatar className="w-16 h-16 animate-bounce drop-shadow-md" />
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-orange-500 font-bold text-sm animate-pulse transition-all duration-500">
-              {loadingText}
-            </p>
-            <p className="text-gray-400 text-xs">
-              正在提炼全网热点精华
-            </p>
-          </div>
-        </div>
-      );
-    }
-
-    if (!summaryData) return null;
-
-    return (
-      <div className="mx-4 mt-4 p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 shadow-[0_8px_32px_rgba(31,38,135,0.07)]">
-        <div className="flex items-start gap-3 mb-3">
-          <div className="shrink-0">
-            <GossipCatAvatar className="w-12 h-12" />
-          </div>
-          <div>
-            <h3 className="font-bold text-gray-800 text-sm flex items-center gap-2 pt-1">
-              猫猫日报
-              <span className="text-xs font-normal px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full">
-                {summaryData.mood} (指数: {summaryData.moodScore})
-              </span>
-            </h3>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-              {summaryData.summary}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-black/5">
-          {summaryData.keywords.map((kw, idx) => (
-            <span
-              key={idx}
-              className="px-2 py-1 rounded-lg text-xs font-medium bg-white/50 border border-white/60 text-gray-600"
-            >
-              {kw.name}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   const renderList = (targetSource: Source) => {
     const data = getCurrentData(targetSource);
@@ -477,8 +373,6 @@ export const HotSearch: React.FC<HotSearchProps> = ({ onBack }) => {
             全网热瓜 · 一网打尽
           </p>
         </div>
-
-        {renderSummarySection()}
 
         <div className="px-4 pb-2 mt-4">
           <div className="flex p-1 bg-gray-100/80 rounded-xl backdrop-blur-sm shadow-inner">
