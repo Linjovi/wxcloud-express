@@ -19,7 +19,8 @@ export async function onRequestGet(context: any) {
   }
 
   try {
-    const upstreamUrl = `https://api.grsai.ai/v1/draw/result`;
+    const baseUrl = env.GRSAI_BASE_URL || "https://api.grsai.com";
+    const upstreamUrl = `${baseUrl}/v1/draw/result`;
 
     const response = await fetch(upstreamUrl, {
       method: "POST",

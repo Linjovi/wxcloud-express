@@ -55,7 +55,8 @@ export async function onRequestPost(context: any) {
     }
 
     // Direct endpoint usage as requested
-    const url = "https://api.grsai.com/v1/draw/nano-banana";
+    const baseUrl = context.env.GRSAI_BASE_URL || "https://api.grsai.com";
+    const url = `${baseUrl}/v1/draw/nano-banana`;
     const apiKey = context.env.GRSAI_API_KEY;
 
     if (!apiKey) {

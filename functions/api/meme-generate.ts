@@ -30,7 +30,7 @@ export async function onRequestPost(context: any) {
     // Determine prompt, urls, and model based on type
     if (type === 1) {
       // Type 1: 9-Grid Meme
-      model = "nano-banana";
+      model = "nano-banana-pro";
       const descriptionText =
         description && description.trim()
           ? `。用户希望：${description.trim()}`
@@ -43,7 +43,7 @@ export async function onRequestPost(context: any) {
       }
     } else if (type === 2) {
       // Type 2: Expression Transfer
-      model = "nano-banana";
+      model = "nano-banana-pro";
       if (!refImage) {
         return new Response(
           JSON.stringify({
@@ -71,7 +71,8 @@ export async function onRequestPost(context: any) {
       );
     }
 
-    const url = "https://api.grsai.com/v1/draw/nano-banana";
+    const baseUrl = context.env.GRSAI_BASE_URL || "https://api.grsai.com";
+    const url = `${baseUrl}/v1/draw/nano-banana`;
     const apiKey = context.env.GRSAI_API_KEY;
 
     if (!apiKey) {
@@ -126,7 +127,7 @@ export async function onRequestPost(context: any) {
     const reader = response.body.getReader();
     const writer = writable.getWriter();
     const decoder = new TextDecoder();
-    
+
     // We need to capture the full response to extract the final image URL/data for backup
     let fullResponse = "";
 
@@ -137,10 +138,10 @@ export async function onRequestPost(context: any) {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-            
+
             // Write to client immediately
             await writer.write(value);
-            
+
             // Accumulate for backup
             const text = decoder.decode(value, { stream: true });
             fullResponse += text;
@@ -149,59 +150,64 @@ export async function onRequestPost(context: any) {
 
           // After stream is done, try to parse the result for backup
           // The stream usually ends with data: [DONE], we need to find the last valid JSON
-          const lines = fullResponse.split('\n');
+          const lines = fullResponse.split("\n");
           let imageUrl: string | null = null;
           let remoteId: string | null = null;
 
           for (const line of lines) {
-            if (line.startsWith('data: ') && !line.includes('[DONE]')) {
-               try {
-                 const jsonStr = line.slice(6);
-                 const data = JSON.parse(jsonStr);
+            if (line.startsWith("data: ") && !line.includes("[DONE]")) {
+              try {
+                const jsonStr = line.slice(6);
+                const data = JSON.parse(jsonStr);
 
-                 // Capture ID if available
-                 if (data.id) {
-                    remoteId = data.id;
-                 }
+                // Capture ID if available
+                if (data.id) {
+                  remoteId = data.id;
+                }
 
-                 // Check for image data in this chunk
-                 if (data.results && data.results.length > 0 && data.results[0].url) {
-                    imageUrl = data.results[0].url;
-                 }
-               } catch (e) {
-                 // ignore parsing errors for partial chunks
-               }
+                // Check for image data in this chunk
+                if (
+                  data.results &&
+                  data.results.length > 0 &&
+                  data.results[0].url
+                ) {
+                  imageUrl = data.results[0].url;
+                }
+              } catch (e) {
+                // ignore parsing errors for partial chunks
+              }
             }
           }
 
           // Perform backup if we found image data
           if (imageUrl && context.env.MEME_BACKUP_BUCKET) {
-             try {
-                let body: ArrayBuffer | Uint8Array | null = null;
-                let suffix = "png";
+            try {
+              let body: ArrayBuffer | Uint8Array | null = null;
+              let suffix = "png";
 
-                if (imageUrl) {
-                  const imgRes = await fetch(imageUrl);
-                  if (imgRes.ok) {
-                    body = await imgRes.arrayBuffer();
-                  }
+              if (imageUrl) {
+                const imgRes = await fetch(imageUrl);
+                if (imgRes.ok) {
+                  body = await imgRes.arrayBuffer();
                 }
+              }
 
-                if (body) {
-                  // Use remoteId if available, otherwise fallback to UUID
-                  const id = remoteId || crypto.randomUUID();
-                  const key = `meme/${id}.${suffix}`;
-                  await context.env.MEME_BACKUP_BUCKET.put(key, body);
-                  console.log(`[Backup] Uploaded to R2: ${key}`);
-                }
-             } catch (e) {
-                console.error("[Backup] Failed to upload to R2:", e);
-             }
+              if (body) {
+                // Use remoteId if available, otherwise fallback to UUID
+                const id = remoteId || crypto.randomUUID();
+                const key = `meme/${id}.${suffix}`;
+                await context.env.MEME_BACKUP_BUCKET.put(key, body);
+                console.log(`[Backup] Uploaded to R2: ${key}`);
+              }
+            } catch (e) {
+              console.error("[Backup] Failed to upload to R2:", e);
+            }
           }
-
         } catch (err) {
           console.error("Stream processing error:", err);
-          try { await writer.close(); } catch {}
+          try {
+            await writer.close();
+          } catch {}
         }
       })()
     );
@@ -212,7 +218,8 @@ export async function onRequestPost(context: any) {
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
       },
-    });  } catch (error: any) {
+    });
+  } catch (error: any) {
     console.error("Meme Gen API Error:", error);
     return new Response(
       JSON.stringify({
