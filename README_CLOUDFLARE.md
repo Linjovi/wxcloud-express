@@ -44,7 +44,7 @@ To test the application locally with Cloudflare's environment:
     npx wrangler pages deploy public
     ```
     *   Select "Create a new project" if prompted.
-    *   Project name: `wxcloud-express` (or your choice).
+    *   Project name: `huluhulu` (or your choice).
 
 3.  **Environment Variables**:
     After deployment, go to the Cloudflare Dashboard -> Pages -> Your Project -> Settings -> Environment Variables.

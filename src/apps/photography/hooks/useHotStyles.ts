@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getComplimentStyles } from "../api";
+import { getPhotographyStyles } from "../api";
 
 export interface HotStyle {
   title: string;
@@ -18,7 +18,7 @@ export const useHotStyles = () => {
 
     setLoadingHotStyles(true);
     try {
-      const styles = await getComplimentStyles();
+      const styles = await getPhotographyStyles();
       setHotStyles(styles);
     } catch (e) {
       console.error("Failed to fetch hot styles", e);

@@ -1,23 +1,23 @@
 import React, { useState, useRef } from "react";
-import { getCompliment } from "./api";
-import { ComplimentResponse } from "./types";
+import { getPhotography } from "./api";
+import { PhotographyResponse } from "./types";
 import { Sparkles } from "lucide-react";
 import { ImageDisplay } from "./components/ImageDisplay";
 import { ControlPanel } from "./components/ControlPanel";
 import { ResultActions } from "./components/ResultActions";
 import { useHotStyles } from "./hooks/useHotStyles";
 
-interface ComplimentAppProps {
+interface PhotographyAppProps {
   onBack: () => void;
 }
 
-const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
+const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
   const [image, setImage] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
-  const [result, setResult] = useState<ComplimentResponse | null>(null);
+  const [result, setResult] = useState<PhotographyResponse | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"hot" | "function">("hot");
@@ -89,7 +89,7 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
     const outputSize = content.length > 800000 ? "2K" : "1K";
 
     try {
-      await getCompliment(
+      await getPhotography(
         content,
         fullPrompt,
         mimeType,
@@ -150,7 +150,7 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
       if (href) {
         const link = document.createElement("a");
         link.href = href;
-        link.download = `compliment-cat-${Date.now()}.jpg`;
+        link.download = `photography-cat-${Date.now()}.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -226,4 +226,4 @@ const ComplimentApp: React.FC<ComplimentAppProps> = ({ onBack }) => {
   );
 };
 
-export default ComplimentApp;
+export default PhotographyApp;

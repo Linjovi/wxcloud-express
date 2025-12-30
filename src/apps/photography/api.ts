@@ -1,9 +1,9 @@
-import { ComplimentResponse } from "./types";
+import { PhotographyResponse } from "./types";
 
-interface ComplimentApiResponse {
+interface PhotographyApiResponse {
   code: number;
   message: string;
-  data: ComplimentResponse;
+  data: PhotographyResponse;
 }
 
 interface StylesResponse {
@@ -12,17 +12,17 @@ interface StylesResponse {
   message?: string;
 }
 
-export const getCompliment = async (
+export const getPhotography = async (
   image: string,
   prompt: string,
   mimeType: string,
   outputSize: string | undefined,
   style: string | undefined,
   onProgress?: (data: any) => void,
-  onComplete?: (result: ComplimentResponse) => void
+  onComplete?: (result: PhotographyResponse) => void
 ): Promise<void> => {
   try {
-    const response = await fetch("/api/compliment-cat", {
+    const response = await fetch("/api/photography-cat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,14 +80,14 @@ export const getCompliment = async (
       }
     }
   } catch (error) {
-    console.error("Compliment API Error:", error);
+    console.error("Photography API Error:", error);
     throw new Error("网络连接失败，请稍后再试喵~");
   }
 };
 
-export const getComplimentStyles = async (): Promise<Array<{ title: string }>> => {
+export const getPhotographyStyles = async (): Promise<Array<{ title: string }>> => {
   try {
-    const response = await fetch("/api/compliment-styles");
+    const response = await fetch("/api/photography-styles");
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
@@ -99,7 +99,7 @@ export const getComplimentStyles = async (): Promise<Array<{ title: string }>> =
       title: item.title,
     }));
   } catch (error) {
-    console.error("Compliment Styles API Error:", error);
+    console.error("Photography Styles API Error:", error);
     throw new Error("获取灵感失败了喵~");
   }
 };

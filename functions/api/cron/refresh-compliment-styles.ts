@@ -1,4 +1,4 @@
-import { refreshStyles } from "../../services/compliment";
+import { refreshStyles } from "../../services/photography";
 
 export async function onRequest(context: any) {
     console.log("Scheduled Refresh: Starting...");

@@ -29,7 +29,7 @@ export function createGrsaiClient(env: Env) {
  * Generates prompt for a given title using DeepSeek AI.
  * Handles single title (string) input only.
  */
-export async function generateComplimentPrompt(
+export async function generatePhotographyPrompt(
   client: OpenAI,
   title: string,
   temperature: number = 1.1

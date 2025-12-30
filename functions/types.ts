@@ -62,7 +62,7 @@ export interface Env {
   MEME_BACKUP_BUCKET?: any;
 }
 
-export interface ComplimentStyle {
+export interface PhotographyStyle {
   title: string;
   prompt: string;
   tags?: string[];

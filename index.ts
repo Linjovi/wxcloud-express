@@ -7,7 +7,7 @@ import { weiboHotSearchHandler } from "./routes/weiboHotSearch";
 import { douyinHotSearchHandler } from "./routes/douyinHotSearch";
 import { xiaohongshuHotSearchHandler } from "./routes/xiaohongshuHotSearch";
 import { hotSearchSummaryHandler } from "./routes/hotSearchSummary";
-import { complimentStylesHandler } from "./routes/complimentStyles";
+import { photographyStylesHandler } from "./routes/photographyStyles";
 import { tarotHandler } from "./routes/getTarot";
 
 const logger = morgan("tiny");
@@ -51,7 +51,7 @@ app.get("/api/xiaohongshu-hot-search", xiaohongshuHotSearchHandler);
 app.get("/api/hot-search-summary", hotSearchSummaryHandler);
 
 // 夸夸喵灵感接口
-app.get("/api/compliment-styles", complimentStylesHandler);
+app.get("/api/photography-styles", photographyStylesHandler);
 
 
 // React 应用路由处理（所有非 API 路由都返回 index.html）

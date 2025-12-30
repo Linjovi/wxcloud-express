@@ -194,7 +194,7 @@ export const TarotCatAvatar = ({
   </div>
 );
 
-export const ComplimentCatAvatar = ({
+export const PhotographyCatAvatar = ({
   className = "w-24 h-24",
 }: {
   className?: string;
@@ -202,10 +202,10 @@ export const ComplimentCatAvatar = ({
   <div
     className={`${className} relative overflow-hidden rounded-full border-4 border-yellow-200 shadow-xl bg-yellow-50`}
   >
-    {/* Using a bright/happy cat image for Compliment Cat */}
+    {/* Using a bright/happy cat image for Photography Cat */}
     <img
       src="https://pic1.imgdb.cn/item/6943c1dd2ee916d1a3af9521.png"
-      alt="Compliment Cat"
+      alt="Photography Cat"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>

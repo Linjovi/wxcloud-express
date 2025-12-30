@@ -32,7 +32,7 @@ function safeParseJSON(jsonString: string): any {
   }
 }
 
-export async function complimentStylesHandler(req: Request, res: Response) {
+export async function photographyStylesHandler(req: Request, res: Response) {
   try {
     if (cache && Date.now() - cache.timestamp < CACHE_DURATION) {
       return res.json({

@@ -1,11 +1,11 @@
-import { ComplimentStyle } from "../types";
+import { PhotographyStyle } from "../types";
 import { CACHE, CACHE_DURATION } from "../cache";
 import {
   getDouyinHotSearch,
   getXiaohongshuHotSearch,
   createDeepSeekClient,
   safeParseJSON,
-  generateComplimentPrompt,
+  generatePhotographyPrompt,
 } from "../utils";
 
 export const DEFAULT_STYLES: Record<string, string> = {
@@ -72,7 +72,7 @@ export async function refreshStyles(context: any) {
 
     if (Array.isArray(selectedTitles) && selectedTitles.length > 0) {
       // Initialize styles with empty prompts first
-      const styles: ComplimentStyle[] = selectedTitles.map((item: any) => {
+      const styles: PhotographyStyle[] = selectedTitles.map((item: any) => {
         if (typeof item === "string") {
           return { title: item, prompt: "" };
         }
@@ -84,7 +84,7 @@ export async function refreshStyles(context: any) {
       });
 
       // Update Cache immediately with titles
-      setComplimentStylesCache(styles);
+      setPhotographyStylesCache(styles);
 
       // Step 2: Generate Prompts (Sequential or Parallel)
       console.log(
@@ -95,13 +95,13 @@ export async function refreshStyles(context: any) {
       for (const styleItem of styles) {
         try {
           // Use title (which is the theme name) for prompt generation
-          const prompt = await generateComplimentPrompt(
+          const prompt = await generatePhotographyPrompt(
             client,
             styleItem.title,
             1.1
           );
           if (prompt) {
-            updateComplimentStylesCache({
+            updatePhotographyStylesCache({
               title: styleItem.title,
               prompt: prompt,
             });
@@ -117,50 +117,50 @@ export async function refreshStyles(context: any) {
   }
 }
 
-export function setComplimentStylesCache(styles: ComplimentStyle[]) {
-  console.log("Setting compliment styles cache:", styles);
-  CACHE.complimentStyles = {
+export function setPhotographyStylesCache(styles: PhotographyStyle[]) {
+  console.log("Setting photography styles cache:", styles);
+  CACHE.photographyStyles = {
     data: styles,
     timestamp: Date.now(),
   };
 }
 
-export function updateComplimentStylesCache(style: ComplimentStyle) {
-  console.log("Updating compliment styles cache:", style);
-  if (CACHE.complimentStyles) {
-    const index = CACHE.complimentStyles.data.findIndex(
+export function updatePhotographyStylesCache(style: PhotographyStyle) {
+  console.log("Updating photography styles cache:", style);
+  if (CACHE.photographyStyles) {
+    const index = CACHE.photographyStyles.data.findIndex(
       (s) => s.title === style.title
     );
     if (index !== -1) {
-      CACHE.complimentStyles.data[index] = style;
+      CACHE.photographyStyles.data[index] = style;
     } else {
-      CACHE.complimentStyles.data.push(style);
+      CACHE.photographyStyles.data.push(style);
     }
   } else {
-    CACHE.complimentStyles = {
+    CACHE.photographyStyles = {
       data: [style],
       timestamp: Date.now(),
     };
   }
 }
 
-export function getComplimentStylesCache() {
-  if (CACHE.complimentStyles) {
+export function getPhotographyStylesCache() {
+  if (CACHE.photographyStyles) {
     // Ignore CACHE_DURATION, return data until next update overwrite it
-    return CACHE.complimentStyles.data;
+    return CACHE.photographyStyles.data;
   }
   return null;
 }
 
-export function getComplimentStylePrompt(title: string): string | null {
+export function getPhotographyStylePrompt(title: string): string | null {
   // Check default styles first
   if (DEFAULT_STYLES[title]) {
     return DEFAULT_STYLES[title];
   }
 
   // Check if cache exists and not expired (though logic for reading expired might be acceptable if strict consistency isn't needed)
-  if (CACHE.complimentStyles) {
-    const style = CACHE.complimentStyles.data.find(
+  if (CACHE.photographyStyles) {
+    const style = CACHE.photographyStyles.data.find(
       (s) =>
         s.title === title ||
         `🔥 ${s.title}` === title ||

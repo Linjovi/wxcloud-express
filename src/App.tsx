@@ -10,7 +10,7 @@ import { Home } from "./common/components/Home";
 import { HotSearch } from "./apps/hot-search/HotSearch";
 import { AnswerBook } from "./apps/answer/index";
 import TarotApp from "./apps/tarot/index";
-import ComplimentApp from "./apps/compliment/index";
+import PhotographyApp from "./apps/photography/index";
 import MemeApp from "./apps/meme/index";
 import { JudgeApp } from "./apps/judge/JudgeApp";
 import MeowBTIApp from "./apps/mbti/index";
@@ -24,7 +24,7 @@ const routeDepth: Record<string, number> = {
   "/hot-search": 1,
   "/answer": 1,
   "/tarot": 1,
-  "/compliment": 1,
+  "/photography": 1,
   "/meme": 1,
   "/mbti": 1,
 };
@@ -102,7 +102,7 @@ const App: React.FC = () => {
           "塔罗牌, 在线占卜, 运势分析, 塔罗测试, 星座运势, 爱情占卜, 事业运程, 韦特塔罗, 免费占卜, 神秘学",
       };
     }
-    if (pathname.startsWith("/compliment")) {
+    if (pathname.startsWith("/photography")) {
       return {
         title: "猫猫摄影师 - AI彩虹屁生成器与照片美化",
         description:
@@ -155,7 +155,7 @@ const App: React.FC = () => {
   // HotSearch: props.onBack
   // AnswerBook: props.onBack
   // TarotApp: props.onBack
-  // ComplimentApp: props.onBack
+  // PhotographyApp: props.onBack
 
   return (
     // Mobile-first container constraint
@@ -182,7 +182,7 @@ const App: React.FC = () => {
                       onSelectJudge={() => navigate("/judge")}
                       onSelectGossip={() => navigate("/hot-search")}
                       onSelectTarot={() => navigate("/tarot")}
-                      onSelectCompliment={() => navigate("/compliment")}
+                      onSelectPhotography={() => navigate("/photography")}
                       onSelectMeme={() => navigate("/meme")}
                       onSelectMBTI={() => navigate("/mbti")}
                     />
@@ -202,8 +202,8 @@ const App: React.FC = () => {
                   element={<TarotApp onBack={handleBack} />}
                 />
                 <Route
-                  path="/compliment"
-                  element={<ComplimentApp onBack={handleBack} />}
+                  path="/photography"
+                  element={<PhotographyApp onBack={handleBack} />}
                 />
                 <Route path="/meme" element={<MemeApp />} />
                 <Route path="/mbti" element={<MeowBTIApp />} />
@@ -227,7 +227,7 @@ const App: React.FC = () => {
                     onSelectJudge={() => navigate("/judge")}
                     onSelectGossip={() => navigate("/hot-search")}
                     onSelectTarot={() => navigate("/tarot")}
-                    onSelectCompliment={() => navigate("/compliment")}
+                    onSelectPhotography={() => navigate("/photography")}
                     onSelectMeme={() => navigate("/meme")}
                     onSelectMBTI={() => navigate("/mbti")}
                   />
@@ -244,8 +244,8 @@ const App: React.FC = () => {
               />
               <Route path="/tarot" element={<TarotApp onBack={handleBack} />} />
               <Route
-                path="/compliment"
-                element={<ComplimentApp onBack={handleBack} />}
+                path="/photography"
+                element={<PhotographyApp onBack={handleBack} />}
               />
               <Route path="/meme" element={<MemeApp />} />
               <Route path="/mbti" element={<MeowBTIApp />} />

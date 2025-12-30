@@ -30,7 +30,7 @@ export async function onRequestPost(context: any) {
     // Determine prompt, urls, and model based on type
     if (type === 1) {
       // Type 1: 9-Grid Meme
-      model = "nano-banana-pro";
+      model = "nano-banana-fast";
       const descriptionText =
         description && description.trim()
           ? `。用户希望：${description.trim()}`

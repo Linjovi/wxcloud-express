@@ -2,7 +2,7 @@ import {
   HotSearchItem,
   DouyinHotSearchItem,
   MaoyanWebHeatItem,
-  ComplimentStyle,
+  PhotographyStyle,
 } from "./types";
 
 export interface CacheEntry<T> {
@@ -12,7 +12,7 @@ export interface CacheEntry<T> {
 
 export const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
-// Compliment styles cache never expires automatically (updated by cron)
+// Photography styles cache never expires automatically (updated by cron)
 export const COMPLIMENT_CACHE_DURATION = 24 * 60 * 60 * 1000; 
 
 export const CACHE: {
@@ -20,12 +20,12 @@ export const CACHE: {
   douyin: CacheEntry<DouyinHotSearchItem[]> | null;
   xiaohongshu: CacheEntry<HotSearchItem[]> | null;
   maoyanWeb: CacheEntry<MaoyanWebHeatItem[]> | null;
-  complimentStyles: CacheEntry<ComplimentStyle[]> | null;
+  photographyStyles: CacheEntry<PhotographyStyle[]> | null;
 } = {
   weibo: null,
   douyin: null,
   xiaohongshu: null,
   maoyanWeb: null,
-  complimentStyles: null,
+  photographyStyles: null,
 };
 

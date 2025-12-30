@@ -1,9 +1,9 @@
 import {
   safeParseJSON,
-  getComplimentStylePrompt,
-  updateComplimentStylesCache,
+  getPhotographyStylePrompt,
+  updatePhotographyStylesCache,
   createDeepSeekClient,
-  generateComplimentPrompt,
+  generatePhotographyPrompt,
 } from "../utils";
 
 export async function onRequestPost(context: any) {
@@ -15,20 +15,20 @@ export async function onRequestPost(context: any) {
 
     let finalPrompt = prompt;
     if (style) {
-      let cachedPrompt = getComplimentStylePrompt(style);
+      let cachedPrompt = getPhotographyStylePrompt(style);
 
       // If no cached prompt found for the style, try to generate one on the fly
       if (!cachedPrompt) {
         try {
           console.log(`No cached prompt for style "${style}", generating...`);
           const client = createDeepSeekClient(context.env);
-          const generated = await generateComplimentPrompt(client, style, 1.1);
+          const generated = await generatePhotographyPrompt(client, style, 1.1);
 
           if (typeof generated === "string" && generated) {
             console.log(`Generated prompt for "${style}":`, generated);
             cachedPrompt = generated;
             // Update cache for future use
-            updateComplimentStylesCache({ title: style, prompt: generated });
+            updatePhotographyStylesCache({ title: style, prompt: generated });
           }
         } catch (err) {
           console.error(`Failed to generate prompt for style "${style}":`, err);

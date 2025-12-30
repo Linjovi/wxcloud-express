@@ -1,11 +1,11 @@
 import React from "react";
-import { ComplimentCatAvatar } from "../../../common/components/Icons";
-import { ComplimentResponse } from "../types";
+import { PhotographyCatAvatar } from "../../../common/components/Icons";
+import { PhotographyResponse } from "../types";
 import { Sparkles, X, Camera } from "lucide-react";
 
 interface ImageDisplayProps {
   image: string | null;
-  result: ComplimentResponse | null;
+  result: PhotographyResponse | null;
   loading: boolean;
   progress: number;
   statusMessage: string;
@@ -89,7 +89,7 @@ export const ImageDisplay: React.FC<ImageDisplayProps> = ({
       {loading && (
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50">
           <div className="relative">
-            <ComplimentCatAvatar className="w-24 h-24 mb-6 animate-bounce" />
+            <PhotographyCatAvatar className="w-24 h-24 mb-6 animate-bounce" />
             <Sparkles className="absolute -top-2 -right-2 w-8 h-8 text-yellow-400 animate-spin-slow" />
           </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">
