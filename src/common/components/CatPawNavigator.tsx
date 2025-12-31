@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { PawIcon, CatFaceIcon } from './Icons';
 
 interface CatPawNavigatorProps {
@@ -14,25 +14,20 @@ export const CatPawNavigator: React.FC<CatPawNavigatorProps> = ({ className = ''
     setIsExpanded(!isExpanded);
   };
 
-  const handleHeadClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate('/');
-  };
-
   return (
     <div className={`fixed right-0 bottom-32 z-50 flex items-center ${className}`}>
       {/* Cat Head - Hidden initially, slides out when expanded */}
-      <div 
+      <Link 
+        to="/"
         className={`
           transition-all duration-300 ease-in-out transform origin-right
           ${isExpanded ? 'translate-x-0 opacity-100 mr-2' : 'translate-x-full opacity-0'}
           bg-white rounded-full p-2 shadow-lg border-2 border-orange-200 cursor-pointer hover:scale-110
         `}
-        onClick={handleHeadClick}
         title="回到首页"
       >
         <CatFaceIcon className="w-8 h-8 text-orange-500" />
-      </div>
+      </Link>
 
       {/* Cat Paw - Always visible, acts as the toggle */}
       <div 

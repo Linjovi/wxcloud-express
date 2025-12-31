@@ -90,7 +90,7 @@ const ReadingStage: React.FC<ReadingStageProps> = ({
                 <div className="flex flex-col items-center gap-4 mt-12 animate-fade-in py-8" ref={scrollRef}>
                     <div className="relative">
                         <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-yellow-500/50 relative z-10 animate-pulse">
-                            <img src={avatarUrl} className="w-full h-full object-cover" alt="Loading" />
+                            <img src={avatarUrl} className="w-full h-full object-cover" alt="猫猫正在思考..." />
                         </div>
                         <Loader2 className="w-32 h-32 text-yellow-500 animate-spin absolute -top-4 -left-4 opacity-50" />
                         <div className="absolute inset-0 blur-lg bg-yellow-500/30 animate-pulse"></div>

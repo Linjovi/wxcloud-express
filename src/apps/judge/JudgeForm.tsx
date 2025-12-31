@@ -105,7 +105,7 @@ export const JudgeForm: React.FC<JudgeFormProps> = ({ onSubmit }) => {
           <CatJudgeAvatar className="w-28 h-28 drop-shadow-xl" />
         </div>
         <div className="text-center">
-          <h2 className="font-black text-xl text-gray-800">猫猫巡回法庭</h2>
+          <h1 className="font-black text-xl text-gray-800">猫猫巡回法庭</h1>
           <p className="text-xs text-orange-500 font-medium mt-1">
             "本喵宣判：虽然我可爱，但我超公正！喵~"
           </p>

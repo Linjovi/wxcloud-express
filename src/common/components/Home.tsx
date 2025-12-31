@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   CatJudgeAvatar,
   GossipCatAvatar,
@@ -8,23 +9,9 @@ import {
 } from "./Icons";
 import { BrainCircuit } from "lucide-react"; // Import BrainCircuit for MBTI icon
 
-interface HomeProps {
-  onSelectJudge: () => void;
-  onSelectGossip: () => void;
-  onSelectTarot: () => void;
-  onSelectPhotography: () => void;
-  onSelectMeme: () => void;
-  onSelectMBTI: () => void;
-}
+interface HomeProps {}
 
-export const Home: React.FC<HomeProps> = ({
-  onSelectJudge,
-  onSelectGossip,
-  onSelectTarot,
-  onSelectPhotography,
-  onSelectMeme,
-  onSelectMBTI,
-}) => {
+export const Home: React.FC<HomeProps> = () => {
   return (
     <div
       className="p-4 space-y-6 pt-8 pb-20 animate-fade-in"
@@ -43,7 +30,8 @@ export const Home: React.FC<HomeProps> = ({
 
       <div className="space-y-4">
         {/* Meme Cat App */}
-        <button
+        <Link
+          to="/meme"
           style={{
             backgroundImage:
               "url('https://pic1.imgdb.cn/item/693921056166b8110136209d.png')",
@@ -51,7 +39,6 @@ export const Home: React.FC<HomeProps> = ({
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
           }}
-          onClick={onSelectMeme}
           className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-100 to-transparent rounded-bl-full opacity-50"></div>
@@ -88,10 +75,11 @@ export const Home: React.FC<HomeProps> = ({
               />
             </svg>
           </div>
-        </button>
+        </Link>
 
         {/* Photography Cat App */}
-        <button
+        <Link
+          to="/photography"
           style={{
             backgroundImage:
               "url('https://pic1.imgdb.cn/item/6943c1dd2ee916d1a3af9520.png')",
@@ -99,7 +87,6 @@ export const Home: React.FC<HomeProps> = ({
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
           }}
-          onClick={onSelectPhotography}
           className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-100 to-transparent rounded-bl-full opacity-50"></div>
@@ -136,10 +123,11 @@ export const Home: React.FC<HomeProps> = ({
               />
             </svg>
           </div>
-        </button>
+        </Link>
 
         {/* MBTI Cat App */}
-        <button
+        <Link
+          to="/mbti"
           style={{
             backgroundImage:
               "url('https://pic1.imgdb.cn/item/693811d900233646958db503.png')", // Reusing Tarot BG for now or pick a generic one
@@ -147,7 +135,6 @@ export const Home: React.FC<HomeProps> = ({
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
           }}
-          onClick={onSelectMBTI}
           className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-indigo-100 to-transparent rounded-bl-full opacity-50"></div>
@@ -190,10 +177,11 @@ export const Home: React.FC<HomeProps> = ({
               />
             </svg>
           </div>
-        </button>
+        </Link>
 
         {/* Cat Judge App */}
-        <button
+        <Link
+          to="/judge"
           style={{
             backgroundImage:
               "url('https://pic1.imgdb.cn/item/693811a000233646958db453.png')",
@@ -201,7 +189,6 @@ export const Home: React.FC<HomeProps> = ({
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
           }}
-          onClick={onSelectJudge}
           className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-orange-100 to-transparent rounded-bl-full opacity-50"></div>
@@ -241,11 +228,11 @@ export const Home: React.FC<HomeProps> = ({
               />
             </svg>
           </div>
-        </button>
+        </Link>
 
         {/* Gossip Cat App */}
-        <button
-          onClick={onSelectGossip}
+        <Link
+          to="/hot-search"
           style={{
             backgroundImage:
               "url('https://pic1.imgdb.cn/item/693811ab00233646958db46d.png')",
@@ -289,10 +276,11 @@ export const Home: React.FC<HomeProps> = ({
               />
             </svg>
           </div>
-        </button>
+        </Link>
 
         {/* Taro Cat App */}
-        <button
+        <Link
+          to="/tarot"
           style={{
             backgroundImage:
               "url('https://pic1.imgdb.cn/item/693811d900233646958db503.png')",
@@ -300,7 +288,6 @@ export const Home: React.FC<HomeProps> = ({
             backgroundPosition: "140% bottom",
             backgroundRepeat: "no-repeat",
           }}
-          onClick={onSelectTarot}
           className="w-full bg-white p-4 rounded-3xl shadow-lg shadow-gray-100 border border-white flex items-center gap-4 active:scale-95 transition-all group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-purple-100 to-transparent rounded-bl-full opacity-50"></div>
@@ -337,7 +324,7 @@ export const Home: React.FC<HomeProps> = ({
               />
             </svg>
           </div>
-        </button>
+        </Link>
 
         {/* Placeholder for 'More' */}
         <div className="w-full bg-gray-100/50 p-4 rounded-3xl border-2 border-dashed border-gray-200 flex items-center justify-center gap-2 text-gray-400">

@@ -314,6 +314,7 @@ const App: React.FC<AppProps> = ({ onBack }) => {
 
       {/* Header */}
       <header className="p-6 text-center z-10 animate-fade-in pt-12 md:pt-6">
+        <h1 className="sr-only">塔罗秘境喵 - 在线塔罗占卜</h1>
         <p className="text-indigo-200 text-xs md:text-sm mt-3 font-light tracking-[0.2em] uppercase opacity-80">
           喵呜~ 洞悉过去 · 把握当下 · 预见未来
         </p>

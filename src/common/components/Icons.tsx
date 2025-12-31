@@ -11,7 +11,7 @@ export const CatJudgeAvatar = ({
   >
     <img
       src="https://pic1.imgdb.cn/item/6938116c00233646958db30e.png"
-      alt="Anime Cat Judge"
+      alt="猫猫法官头像"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>
@@ -27,7 +27,7 @@ export const GossipCatAvatar = ({
   >
     <img
       src="https://pic1.imgdb.cn/item/6938117f00233646958db3b6.png"
-      alt="Gossip Cat"
+      alt="吃瓜喵头像"
       className="w-full h-full object-cover"
     />
   </div>
@@ -172,7 +172,7 @@ export const FortuneCatAvatar = ({
   >
     <img
       src="https://pic1.imgdb.cn/item/69315edc1f1698c4ff0bedaf.png"
-      alt="Fortune Cat"
+      alt="答案之书喵头像"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>
@@ -188,7 +188,7 @@ export const TarotCatAvatar = ({
   >
     <img
       src="https://pic1.imgdb.cn/item/6938119300233646958db43a.png"
-      alt="Tarot Cat"
+      alt="塔罗喵头像"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>
@@ -205,7 +205,7 @@ export const PhotographyCatAvatar = ({
     {/* Using a bright/happy cat image for Photography Cat */}
     <img
       src="https://pic1.imgdb.cn/item/6943c1dd2ee916d1a3af9521.png"
-      alt="Photography Cat"
+      alt="摄影喵头像"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>
@@ -221,7 +221,7 @@ export const MemeCatAvatar = ({
   >
     <img
       src="https://pic1.imgdb.cn/item/693921056166b8110136209c.png"
-      alt="Meme Cat"
+      alt="表情包制作喵头像"
       className="w-full h-full object-cover transform scale-110"
     />
   </div>

@@ -67,9 +67,9 @@ export const AnswerBook: React.FC<AnswerBookProps> = () => {
                 <div className="absolute inset-0 bg-purple-500/30 rounded-full blur-2xl animate-pulse"></div>
                 <FortuneCatAvatar className="w-32 h-32 relative z-10 border-4 border-purple-300/50 shadow-[0_0_30px_rgba(168,85,247,0.4)]" />
               </div>
-              <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200 tracking-wider drop-shadow-lg">
+              <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200 tracking-wider drop-shadow-lg">
                 答案之书喵
-              </h2>
+              </h1>
               <p className="text-purple-200/80 text-sm font-medium tracking-wide leading-relaxed">
                 "心中默念你的问题... <br />
                 宇宙自有安排... 喵~"

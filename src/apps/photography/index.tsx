@@ -259,6 +259,7 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-50 flex flex-col font-sans overflow-hidden">
+      <h1 className="sr-only">猫猫摄影师 - AI照片修图与美化</h1>
       {/* Toast Error */}
       {errorMsg && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-full shadow-xl z-50 animate-fade-in-up flex items-center gap-2">

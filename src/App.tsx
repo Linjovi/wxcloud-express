@@ -178,14 +178,7 @@ const App: React.FC = () => {
                 <Route
                   path="/"
                   element={
-                    <Home
-                      onSelectJudge={() => navigate("/judge")}
-                      onSelectGossip={() => navigate("/hot-search")}
-                      onSelectTarot={() => navigate("/tarot")}
-                      onSelectPhotography={() => navigate("/photography")}
-                      onSelectMeme={() => navigate("/meme")}
-                      onSelectMBTI={() => navigate("/mbti")}
-                    />
+                    <Home />
                   }
                 />
                 <Route path="/judge" element={<JudgeApp />} />
@@ -223,14 +216,7 @@ const App: React.FC = () => {
               <Route
                 path="/"
                 element={
-                  <Home
-                    onSelectJudge={() => navigate("/judge")}
-                    onSelectGossip={() => navigate("/hot-search")}
-                    onSelectTarot={() => navigate("/tarot")}
-                    onSelectPhotography={() => navigate("/photography")}
-                    onSelectMeme={() => navigate("/meme")}
-                    onSelectMBTI={() => navigate("/mbti")}
-                  />
+                  <Home />
                 }
               />
               <Route path="/judge" element={<JudgeApp />} />

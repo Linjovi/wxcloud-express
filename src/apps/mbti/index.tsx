@@ -3,10 +3,9 @@ import { ChevronLeft, Copy, Check, Sparkles, MessageCircle, BrainCircuit, Settin
 import { analyzeIncomingMessage, generateReplySuggestions } from './api';
 import { MBTIType, MessageAnalysis, ReplySuggestion } from './types';
 import { MBTI_LIST, getMBTIAvatar, getMBTIColor, getRelationshipLabel } from './constants';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const MeowBTIApp: React.FC = () => {
-  const navigate = useNavigate();
   const suggestionsRef = useRef<HTMLDivElement>(null);
   
   const [targetMBTI, setTargetMBTI] = useState<MBTIType>('INFJ');
@@ -81,9 +80,9 @@ const MeowBTIApp: React.FC = () => {
         className="h-16 flex items-center justify-between px-4 sticky top-0 z-20 shadow-sm transition-colors duration-500"
         style={{ backgroundColor: mbtiColor }}
       >
-        <button onClick={() => navigate('/')} className="text-white p-2 hover:bg-white/10 rounded-full transition-colors">
+        <Link to="/" className="text-white p-2 hover:bg-white/10 rounded-full transition-colors">
           <ChevronLeft size={28} />
-        </button>
+        </Link>
         <h1 className="text-lg font-black text-white tracking-widest uppercase">MeowBTI {targetMBTI}</h1>
         <button onClick={handleReset} className="text-white p-2 hover:bg-white/10 rounded-full transition-colors">
           <RotateCcw size={22} />

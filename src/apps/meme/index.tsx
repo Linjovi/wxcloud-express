@@ -416,6 +416,7 @@ const MemeApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-green-50 flex flex-col">
+      <h1 className="sr-only">表情包制作喵 - 在线表情包生成器</h1>
       <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full">
         <div className="flex bg-white p-1 rounded-xl mb-6 shadow-sm border border-green-100">
           <button
