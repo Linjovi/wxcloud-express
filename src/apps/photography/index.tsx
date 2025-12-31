@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { getPhotography } from "./api";
+import React, { useState, useRef, useEffect } from "react";
+import { getPhotography, pollPhotographyTask } from "./api";
 import { PhotographyResponse } from "./types";
 import { Sparkles } from "lucide-react";
 import { ImageDisplay } from "./components/ImageDisplay";
@@ -22,6 +22,7 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"hot" | "function">("hot");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -34,12 +35,88 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
     setTimeout(() => setErrorMsg(null), 3000);
   };
 
+  // Restore task from local storage
+  useEffect(() => {
+    const checkPendingTask = async () => {
+      const storedTask = localStorage.getItem("huluhulu_photography_task");
+      if (!storedTask) return;
+
+      try {
+        const {
+          id,
+          image: savedImage,
+          prompt: savedPrompt,
+          selectedPreset: savedPreset,
+          activeTab: savedActiveTab,
+          backgroundImage: savedBgImage,
+          timestamp,
+        } = JSON.parse(storedTask);
+
+        // Expire after 1 hour
+        if (Date.now() - timestamp > 60 * 60 * 1000) {
+          localStorage.removeItem("huluhulu_photography_task");
+          return;
+        }
+
+        // Restore context
+        setImage(savedImage);
+        setPrompt(savedPrompt || "");
+        setSelectedPreset(savedPreset);
+        if (savedActiveTab) setActiveTab(savedActiveTab);
+        if (savedBgImage) setBackgroundImage(savedBgImage);
+
+        setLoading(true);
+        setStatusMessage("正在恢复任务...");
+
+        // Poll for result
+        await pollTask(id);
+      } catch (e) {
+        console.error("Error checking pending task:", e);
+        localStorage.removeItem("huluhulu_photography_task");
+      }
+    };
+
+    checkPendingTask();
+  }, []);
+
+  const pollTask = async (id: string) => {
+    try {
+      const data = await pollPhotographyTask(id);
+      
+      if (data.status === "succeeded") {
+        if (data.results && data.results.length > 0 && data.results[0].url) {
+          setResult({ imageUrl: data.results[0].url });
+          setShowOriginal(false);
+        }
+        setLoading(false);
+        setProgress(0);
+        localStorage.removeItem("huluhulu_photography_task");
+      } else if (data.status === "failed") {
+        showError(data.failure_reason || "任务失败了喵~");
+        setLoading(false);
+        localStorage.removeItem("huluhulu_photography_task");
+      } else {
+        // Running
+        if (data.progress) {
+          setProgress(data.progress);
+        }
+        setStatusMessage("正在绘制喵...");
+        setTimeout(() => pollTask(id), 2000);
+      }
+    } catch (e) {
+      console.error("Poll error", e);
+      showError("恢复任务失败了喵~");
+      setLoading(false);
+      localStorage.removeItem("huluhulu_photography_task");
+    }
+  };
+
   const defaultPresets = [
     { title: "一键美化" },
     { title: "清除路人" },
-    // { title: "更换场景" },
+    { title: "更换背景" },
     { title: "动漫风格" },
-    // { title: "更换天气" },
+    { title: "更换天气" },
   ];
 
   const processFile = (file: File) => {
@@ -87,6 +164,7 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
     const content = image.split(",")[1];
     const mimeType = image.split(";")[0].split(":")[1];
     const outputSize = content.length > 800000 ? "2K" : "1K";
+    const bgImageContent = backgroundImage ? backgroundImage.split(",")[1] : undefined;
 
     try {
       await getPhotography(
@@ -95,7 +173,24 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
         mimeType,
         outputSize,
         style,
+        bgImageContent,
         (progressData) => {
+          // Save task ID for recovery
+          if (progressData.id) {
+            localStorage.setItem(
+              "huluhulu_photography_task",
+              JSON.stringify({
+                id: progressData.id,
+                image,
+                prompt,
+                selectedPreset,
+                activeTab,
+                backgroundImage,
+                timestamp: Date.now(),
+              })
+            );
+          }
+
           if (progressData.progress) {
             setProgress(progressData.progress);
           }
@@ -112,6 +207,7 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
           }
           setLoading(false);
           setProgress(0);
+          localStorage.removeItem("huluhulu_photography_task");
         }
       );
     } catch (error) {
@@ -121,17 +217,16 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
   };
 
   const handleReset = () => {
-    setImage(null);
-    setPrompt("");
+    // Retain image and settings for "Edit Another"
     setResult(null);
     setShowOriginal(false);
-    setSelectedPreset(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    localStorage.removeItem("huluhulu_photography_task");
   };
 
   const handleClearImage = () => {
     setImage(null);
     setResult(null);
+    localStorage.removeItem("huluhulu_photography_task");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -208,6 +303,8 @@ const PhotographyApp: React.FC<PhotographyAppProps> = ({ onBack }) => {
           defaultPresets={defaultPresets}
           imageLoaded={!!image}
           textareaRef={textareaRef}
+          backgroundImage={backgroundImage}
+          setBackgroundImage={setBackgroundImage}
         />
       ) : result ? (
         <ResultActions onDownload={handleDownload} onReset={handleReset} />

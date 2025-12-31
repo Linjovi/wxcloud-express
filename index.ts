@@ -51,7 +51,7 @@ app.get("/api/xiaohongshu-hot-search", xiaohongshuHotSearchHandler);
 app.get("/api/hot-search-summary", hotSearchSummaryHandler);
 
 // 夸夸喵灵感接口
-app.get("/api/photography-styles", photographyStylesHandler);
+app.get("/api/image/photography-styles", photographyStylesHandler);
 
 
 // React 应用路由处理（所有非 API 路由都返回 index.html）

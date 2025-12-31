@@ -137,7 +137,7 @@ const MemeApp: React.FC = () => {
 
   const pollTask = async (id: string, type: MemeType) => {
     try {
-      const res = await fetch(`/api/meme-result?id=${id}`);
+      const res = await fetch(`/api/image/meme-result?id=${id}`);
       const data = await res.json();
 
       if (data.code !== 0) {
@@ -265,7 +265,7 @@ const MemeApp: React.FC = () => {
     // let spriteSheetBase64: string | null = null; // Removed
 
     try {
-      const response = await fetch("/api/meme-generate", {
+      const response = await fetch("/api/image/meme-generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

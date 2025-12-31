@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { getPhotographyStyles } from "../api";
-
-export interface HotStyle {
-  title: string;
-}
+import { HotStyle } from "../types";
 
 export const useHotStyles = () => {
   const [hotStyles, setHotStyles] = useState<HotStyle[]>([]);

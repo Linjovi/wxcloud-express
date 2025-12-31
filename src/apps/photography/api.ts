@@ -1,4 +1,4 @@
-import { PhotographyResponse } from "./types";
+import { HotStyle, PhotographyResponse } from "./types";
 
 interface PhotographyApiResponse {
   code: number;
@@ -18,16 +18,25 @@ export const getPhotography = async (
   mimeType: string,
   outputSize: string | undefined,
   style: string | undefined,
+  backgroundImage: string | undefined,
   onProgress?: (data: any) => void,
   onComplete?: (result: PhotographyResponse) => void
 ): Promise<void> => {
   try {
-    const response = await fetch("/api/photography-cat", {
+    const response = await fetch("/api/image/photography-cat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image, prompt, mimeType, outputSize, style, stream: true }),
+      body: JSON.stringify({
+        image,
+        prompt,
+        mimeType,
+        outputSize,
+        style,
+        backgroundImage,
+        stream: true,
+      }),
     });
 
     if (!response.ok) {
@@ -55,23 +64,29 @@ export const getPhotography = async (
 
           try {
             const data = JSON.parse(jsonStr);
-            
+
             // Check for progress updates
             if (data.status === "running") {
               if (onProgress) {
                 onProgress(data);
               }
-            } else if (data.status === "succeeded" && data.results && data.results.length > 0) {
+            } else if (
+              data.status === "succeeded" &&
+              data.results &&
+              data.results.length > 0
+            ) {
               const imageUrl = data.results[0].url;
               if (imageUrl) {
-                 if (onComplete) {
-                     onComplete({ imageUrl });
-                 }
+                if (onComplete) {
+                  onComplete({ imageUrl });
+                }
               }
             } else if (data.status === "failed") {
-                 if (onComplete) {
-                     onComplete({ error: data.failure_reason || "Generation failed" } as any);
-                 }
+              if (onComplete) {
+                onComplete({
+                  error: data.failure_reason || "Generation failed",
+                } as any);
+              }
             }
           } catch (e) {
             console.error("Error parsing stream data", e);
@@ -85,9 +100,9 @@ export const getPhotography = async (
   }
 };
 
-export const getPhotographyStyles = async (): Promise<Array<{ title: string }>> => {
+export const getPhotographyStyles = async (): Promise<HotStyle[]> => {
   try {
-    const response = await fetch("/api/photography-styles");
+    const response = await fetch("/api/image/photography-styles");
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
@@ -97,6 +112,8 @@ export const getPhotographyStyles = async (): Promise<Array<{ title: string }>> 
     }
     return result.data.map((item: any) => ({
       title: item.title,
+      source: item.source,
+      prompt: item.prompt,
     }));
   } catch (error) {
     console.error("Photography Styles API Error:", error);

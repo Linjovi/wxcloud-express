@@ -1,7 +1,7 @@
 import {
   getStoredPhotographyStyles,
   refreshStyles,
-} from "../services/photography";
+} from "../../services/photography";
 
 export async function onRequestGet(context: any) {
   try {

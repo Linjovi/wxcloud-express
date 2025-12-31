@@ -1,10 +1,11 @@
 import React from "react";
-import { Flame, Settings2, Loader2, Wand2 } from "lucide-react";
+import { Flame, Settings2, Loader2, Wand2, Info, ImagePlus, X } from "lucide-react";
+import { HotStyle } from "../types";
 
 interface ControlPanelProps {
   activeTab: "hot" | "function";
   setActiveTab: (tab: "hot" | "function") => void;
-  hotStyles: Array<{ title: string }>;
+  hotStyles: HotStyle[];
   loadingHotStyles: boolean;
   selectedPreset: string | null;
   setSelectedPreset: (preset: string | null) => void;
@@ -15,6 +16,8 @@ interface ControlPanelProps {
   defaultPresets: Array<{ title: string }>;
   imageLoaded: boolean;
   textareaRef: React.RefObject<HTMLTextAreaElement>;
+  backgroundImage?: string | null;
+  setBackgroundImage?: (image: string | null) => void;
 }
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -31,34 +34,55 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   defaultPresets,
   imageLoaded,
   textareaRef,
+  backgroundImage,
+  setBackgroundImage,
 }) => {
+  // Find selected style object to get source info
+  const currentStyleObj =
+    activeTab === "hot"
+      ? hotStyles.find((s) => s.title === selectedPreset)
+      : null;
+
+  const bgInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && setBackgroundImage) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBackgroundImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="flex-1 bg-white rounded-t-3xl -mt-6 relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+    <div className="flex-1 bg-white rounded-t-[32px] -mt-6 relative z-10 shadow-[0_-8px_30px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col backdrop-blur-sm">
       {/* Scrollable Form Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {/* Tabs */}
-        <div className="flex gap-4 mb-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-24 scrollbar-hide">
+        {/* Modern Segmented Control */}
+        <div className="flex p-1 bg-gray-100/80 rounded-2xl mb-8 relative">
           <button
             onClick={() => setActiveTab("hot")}
-            className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 z-10 ${
               activeTab === "hot"
-                ? "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400/20"
-                : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             <Flame
               className={`w-4 h-4 ${
-                activeTab === "hot" ? "text-red-500" : "text-gray-400"
+                activeTab === "hot" ? "text-orange-500" : "text-gray-400"
               }`}
             />
-            热搜主题
+            热门趋势
           </button>
           <button
             onClick={() => setActiveTab("function")}
-            className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 z-10 ${
               activeTab === "function"
-                ? "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400/20"
-                : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             <Settings2
@@ -66,79 +90,161 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
                 activeTab === "function" ? "text-blue-500" : "text-gray-400"
               }`}
             />
-            常用功能
+            基础功能
           </button>
         </div>
 
-        {/* Chips Grid */}
-        <div className="mb-6">
+        {/* Style Grid */}
+        <div className="mb-8">
           {activeTab === "hot" && loadingHotStyles ? (
-            <div className="h-24 flex items-center justify-center gap-2 text-gray-400">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm">寻找灵感中...</span>
+            <div className="h-32 flex flex-col items-center justify-center gap-3 text-gray-400">
+              <Loader2 className="w-6 h-6 animate-spin text-gray-300" />
+              <span className="text-xs font-medium">正在分析全网热点...</span>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {(activeTab === "hot" ? hotStyles : defaultPresets).map(
-                (preset) => (
-                  <button
-                    key={preset.title}
-                    onClick={() =>
-                      setSelectedPreset(
-                        selectedPreset === preset.title ? null : preset.title
-                      )
-                    }
-                    className={`px-4 py-2 rounded-full text-sm font-bold border transition-all ${
-                      selectedPreset === preset.title
-                        ? "bg-yellow-500 text-white border-yellow-500 shadow-md transform scale-105"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-yellow-300 hover:bg-yellow-50"
-                    }`}
-                  >
-                    {preset.title}
-                  </button>
-                )
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {(activeTab === "hot" ? hotStyles : defaultPresets).map(
+                  (preset) => (
+                    <button
+                      key={preset.title}
+                      onClick={() =>
+                        setSelectedPreset(
+                          selectedPreset === preset.title ? null : preset.title
+                        )
+                      }
+                      className={`relative px-4 py-2.5 rounded-full text-xs font-bold border transition-all duration-200 flex items-center justify-center text-center ${
+                        selectedPreset === preset.title
+                          ? "bg-gray-900 text-white border-transparent shadow-md transform scale-[1.02]"
+                          : "bg-gray-50 text-gray-600 border-transparent hover:bg-gray-100"
+                      }`}
+                    >
+                      {preset.title}
+                    </button>
+                  )
+                )}
+              </div>
+
+              {/* Background Image Upload for "更换背景" */}
+              {activeTab === "function" && selectedPreset === "更换背景" && setBackgroundImage && (
+                <div className="animate-fade-in-up">
+                  <label className="text-xs font-bold text-gray-900 mb-2 block">
+                    上传背景图
+                  </label>
+                  {backgroundImage ? (
+                    <div className="relative w-full h-32 rounded-2xl overflow-hidden group border border-gray-100">
+                      <img
+                        src={backgroundImage}
+                        alt="Background"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={() => setBackgroundImage(null)}
+                        className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => bgInputRef.current?.click()}
+                      className="w-full h-32 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-400 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                    >
+                      <ImagePlus size={24} />
+                      <span className="text-xs">点击上传背景</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    ref={bgInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleBgUpload}
+                  />
+                </div>
               )}
+
+              {/* Source Info Card */}
+              {activeTab === "hot" &&
+                currentStyleObj &&
+                currentStyleObj.source &&
+                currentStyleObj.source.length > 0 && (
+                  <div className="animate-fade-in-up bg-orange-50/50 rounded-2xl p-4 border border-orange-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Info className="w-3.5 h-3.5 text-orange-400" />
+                      <span className="text-xs font-bold text-orange-600">
+                        灵感来源
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {currentStyleObj.source.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="text-xs px-2.5 py-1 bg-white text-orange-700 rounded-md border border-orange-100/50 shadow-sm"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               {activeTab === "hot" && hotStyles.length === 0 && (
-                <div className="w-full text-center py-4 text-gray-400 text-sm">
-                  暂无推荐，试试常用功能吧~
+                <div className="w-full text-center py-8">
+                  <p className="text-gray-400 text-sm mb-2">暂无热门推荐</p>
+                  <button
+                    onClick={() => setActiveTab("function")}
+                    className="text-orange-500 text-xs font-bold hover:underline"
+                  >
+                    试试基础功能 →
+                  </button>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Prompt Input */}
-        <div className="relative">
-          <label className="text-xs font-bold text-gray-400 mb-2 block uppercase tracking-wider">
-            补充描述 (可选)
-          </label>
+        {/* Input Area */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <label className="text-xs font-bold text-gray-900">补充细节</label>
+            <span
+              className={`text-[10px] font-medium ${
+                prompt.length > 180 ? "text-red-500" : "text-gray-400"
+              }`}
+            >
+              {prompt.length}/200
+            </span>
+          </div>
           <textarea
             ref={textareaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="例如：让天空更蓝一点..."
-            className="w-full p-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-yellow-400 focus:bg-white outline-none resize-none text-sm h-24 text-gray-700 transition-all placeholder:text-gray-400"
+            placeholder="想要画面更亮一点？或者是某种特殊的氛围？在这里告诉我..."
+            className="w-full p-4 rounded-2xl bg-gray-50 border border-gray-100 focus:bg-white focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none resize-none text-sm h-32 text-gray-800 transition-all placeholder:text-gray-400 shadow-sm"
           />
-          <div className="absolute bottom-3 right-3 text-xs text-gray-400 font-medium">
-            {prompt.length}/200
-          </div>
         </div>
       </div>
 
-      {/* Fixed Generate Button */}
+      {/* Fixed Bottom Action Bar */}
       {imageLoaded && (
-        <div className="p-4 bg-white border-t border-gray-100 z-20">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 z-20 pb-8">
           <button
             onClick={onGenerate}
             disabled={(!prompt.trim() && !selectedPreset) || loading}
-            className="w-full bg-black text-white font-bold py-4 rounded-full shadow-lg hover:shadow-xl disabled:bg-gray-300 disabled:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2 text-lg"
+            className="w-full bg-gray-900 text-white font-bold py-4 rounded-[20px] shadow-xl shadow-gray-200 hover:shadow-2xl disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2.5 text-[15px]"
           >
             {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <>
+                <Loader2 className="w-5 h-5 animate-spin text-white/80" />
+                <span>正在施展魔法...</span>
+              </>
             ) : (
-              <Wand2 className="w-5 h-5" />
+              <>
+                <Wand2 className="w-5 h-5" />
+                {!prompt.trim() && !selectedPreset ? "请选择效果" : "开始生成"}
+              </>
             )}
-            {!prompt.trim() && !selectedPreset ? "请选择效果" : "开始生成"}
           </button>
         </div>
       )}

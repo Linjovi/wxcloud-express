@@ -13,18 +13,6 @@ export function createDeepSeekClient(env: Env) {
   });
 }
 
-export function createGrsaiClient(env: Env) {
-  if (!env.GRSAI_API_KEY) {
-    throw new Error("GRSAI_API_KEY 未配置");
-  }
-
-  return new OpenAI({
-    baseURL: env.GRSAI_BASE_URL || "https://api.grsai.com/v1",
-    apiKey: env.GRSAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
-}
-
 /**
  * Generates prompt for a given title using DeepSeek AI.
  * Handles single title (string) input only.

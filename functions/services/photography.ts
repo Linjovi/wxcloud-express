@@ -10,7 +10,6 @@ import {
 export const DEFAULT_STYLES: Record<string, string> = {
   清除路人:
     "专业后期修图，智能移除画面背景中的路人、杂物和干扰元素，智能填充背景，保持画面自然完整，构图干净整洁。",
-  更换场景: "保持人物主体光影和透视关系不变，将背景环境智能替换为：",
   一键美化:
     "大师级人像精修，自然磨皮美白，亮眼提神，五官立体化，肤色均匀通透，调整光影质感，增强画面清晰度，杂志封面级修图。",
   动漫风格:
@@ -91,10 +90,7 @@ export async function refreshStyles(context: any) {
 
       const promptPromises = styles.map(async (styleItem) => {
         try {
-          const prompt = await generateEditingPrompt(
-            client,
-            styleItem.title
-          );
+          const prompt = await generateEditingPrompt(client, styleItem.title);
           return { ...styleItem, prompt: prompt || "" };
         } catch (err) {
           console.error(`Prompt gen error for ${styleItem.title}:`, err);
@@ -103,10 +99,10 @@ export async function refreshStyles(context: any) {
       });
 
       styles = await Promise.all(promptPromises);
-      
+
       // Save to Storage (D1 + Memory)
       await savePhotographyStyles(context, styles);
-      
+
       console.log("Refresh completed.");
       return styles;
     }
@@ -120,7 +116,10 @@ export async function refreshStyles(context: any) {
 /**
  * Specialized prompt generator for Photo Editing / Style Transfer
  */
-async function generateEditingPrompt(client: any, title: string): Promise<string | null> {
+async function generateEditingPrompt(
+  client: any,
+  title: string
+): Promise<string | null> {
   const systemContent = `你是一个精通 AI 绘画与修图的提示词专家。
 任务：为主题“${title}”编写一段适用于 **图生图 (img2img)** 或 **AI 写真** 的英文提示词 (Prompt)。
 目标：将用户上传的照片转换为该主题风格，同时保留人物主要特征。
@@ -157,7 +156,9 @@ async function generateEditingPrompt(client: any, title: string): Promise<string
 /**
  * Get styles from Memory -> D1 -> null
  */
-export async function getStoredPhotographyStyles(context: { env: Env }): Promise<PhotographyStyle[] | null> {
+export async function getStoredPhotographyStyles(context: {
+  env: Env;
+}): Promise<PhotographyStyle[] | null> {
   // 1. Try Memory Cache
   const memoryStyles = getPhotographyStylesCache();
   if (memoryStyles) {
@@ -177,16 +178,18 @@ export async function getStoredPhotographyStyles(context: { env: Env }): Promise
         const results = await context.env.DB.prepare(
           "SELECT title, source, prompt FROM photography_styles WHERE batch_id = ?"
         )
-        .bind(latestBatch.batch_id)
-        .all();
+          .bind(latestBatch.batch_id)
+          .all();
 
         if (results && results.results.length > 0) {
-          const styles: PhotographyStyle[] = results.results.map((row: any) => ({
-            title: row.title,
-            prompt: row.prompt,
-            source: row.source ? JSON.parse(row.source) : [],
-          }));
-          
+          const styles: PhotographyStyle[] = results.results.map(
+            (row: any) => ({
+              title: row.title,
+              prompt: row.prompt,
+              source: row.source ? JSON.parse(row.source) : [],
+            })
+          );
+
           // Update memory cache
           setPhotographyStylesCache(styles);
           return styles;
@@ -200,7 +203,10 @@ export async function getStoredPhotographyStyles(context: { env: Env }): Promise
   return null;
 }
 
-export async function savePhotographyStyles(context: { env: Env }, styles: PhotographyStyle[]) {
+export async function savePhotographyStyles(
+  context: { env: Env },
+  styles: PhotographyStyle[]
+) {
   // 1. Update Memory
   setPhotographyStylesCache(styles);
 
@@ -220,7 +226,9 @@ export async function savePhotographyStyles(context: { env: Env }, styles: Photo
 
     try {
       await context.env.DB.batch(stmts);
-      console.log(`Saved ${styles.length} styles to D1 with batch_id ${batchId}`);
+      console.log(
+        `Saved ${styles.length} styles to D1 with batch_id ${batchId}`
+      );
     } catch (e) {
       console.error("Failed to write batch to D1:", e);
     }
